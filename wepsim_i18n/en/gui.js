@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -22,6 +22,7 @@
     i18n.eltos.gui.en = {
 
 		"Loading WepSIM...":  			        "Loading WepSIM...",
+                "About":                         		"About",
 		"Configuration":  			        "Configuration",
 		"MicroCode":  			        	"MicroCode",
 		"Assembly": 		     			"Assembly",
@@ -72,12 +73,12 @@
 	        "instructions":                                 "instructions",
 
                 "simulator intro 1": 		                "You can select the hardware to be used. The default one is the EP (Elemental Processor) hardware.<br>" +
-									"You can use <span class='text-primary bg-light' onclick=\"setTimeout(function(){$('#dd1').dropdown('toggle');},50);\">the mode selector</span> to change the hardware used.",
+									"You can use <span class='text-primary bg-body-tertiary' onclick=\"setTimeout(function(){$('#dd1').dropdown('toggle');},50);\">the mode selector</span> to change the hardware used.",
                 "simulator intro 2": 		                "Then you need to load the microcode (defines the instruction set) and the assembly code.<br>" +
-									"You can use <span class='text-primary bg-light' onclick='wsweb_dialog_open(\"examples\");'>an example</span>, " +
-                                                                        "<span class='text-primary bg-light' onclick='wsweb_select_action(\"checkpoint\");'>load it from a file</span>, " +
-                                                                        "or you can edit <span class='text-primary bg-light' onclick='wsweb_change_workspace_microcode();'>a new microcode</span> " +
-                                                                        " and <span class='text-primary bg-light' onclick='wsweb_change_workspace_assembly();'>a new assembly code</span>.",
+									"You can use <span class='text-primary bg-body-tertiary' onclick='wsweb_dialog_open(\"examples\");'>an example</span>, " +
+                                                                        "<span class='text-primary bg-body-tertiary' onclick='wsweb_select_action(\"checkpoint\");'>load it from a file</span>, " +
+                                                                        "or you can edit <span class='text-primary bg-body-tertiary' onclick='wsweb_change_workspace_microcode();'>a new microcode</span> " +
+                                                                        " and <span class='text-primary bg-body-tertiary' onclick='wsweb_change_workspace_assembly();'>a new assembly code</span>.",
                 "simulator intro 3": 		                "Finally, in the simulator you are able to execute the microcode plus assembly loaded before.<br>" +
 									"You can execute it both, at microinstruction level or assembly instruction level.",
 
@@ -116,9 +117,12 @@
                 'Information from': 				'Information from',
                 'Pick firm/soft from': 				'Pick firm/soft from',
                 'Welcome tutorial': 				'Welcome tutorial',
-                'idiom': 					'idiom',
                 'Assembly only': 				'Assembly only',
                 'Micro & Assembly': 				'Micro & Assembly',
+
+                'idiom': 					'idiom',
+                'quick config': 				'quick config',
+                'Graph: quick interactive mode':		'Graph: quick interactive mode',
 
 		"_last_":					"_last_"
     } ;

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -34,7 +34,7 @@
               }
 
               // render
-              render ( )
+              render ( event_name )
               {
                     // initialize render elements...
                     super.render() ;
@@ -71,11 +71,11 @@
         {
              o = "" ;
 
-             o += "<div class='card mb-1'>" +
+             o += "<div class='card mb-2 border-secondary'>" +
                   "  <div class='card-header text-white bg-dark p-1' id='state_header_1'>" +
                   "    <h5 class='m-0'>" +
-                  "            <a data-toggle='collapse' href='#states3'><span class='text-white bg-dark' data-langkey='Current State'>Current State</span></a>:&nbsp;" +
-                  "            <span class='btn btn-light btn-sm float-right py-0'" +
+                  "            <a data-bs-toggle='collapse' href='#states3' class='btn btn-sm fs-5 float-start p-0'><span class='text-white bg-dark' data-langkey='Current State'>Current State</span></a>:&nbsp;" +
+                  "            <span class='btn bg-body-tertiary text-primary border-secondary btn-sm float-end'" +
                   "                  onclick='wepsim_state_history_add();" +
                   "                           wepsim_notify_success(\"<strong>INFO</strong>\", \"Added !.\");" +
                   "                           wepsim_state_history_list();" +
@@ -87,30 +87,30 @@
                   "  </div>" +
                   "  <div id='states3b' class='collapse show' aria-labelledby='state_header_1'>" +
                   "    <div class='card-body p-1'>" +
-                  "        <div class='container-fluid ml-1 pb-0 collapse show' id='states3'" +
+                  "        <div class='container-fluid ms-1 pb-0 collapse show' id='states3'" +
                   "             style='max-height:50vh; width:inherit;'>" +
                   "" +
                   "             <div class='row mt-2'>" +
-                  "             <div class='col-auto text-center pr-0'>" +
+                  "             <div class='col-auto text-center pe-0'>" +
                   "                        <strong class='m-2'>" +
                   "                            <span class='badge badge-pill border-secondary border shadow'>" +
-                  "                                    <a class='col-auto p-0 text-decoration-none text-reset'" +
-                  "                                       data-toggle='collapse' data-target='#collapse_X'" +
+                  "                                    <a class='col-auto p-0 text-decoration-none'" +
+                  "                                       data-bs-toggle='collapse' data-bs-target='#collapse_X'" +
                   "                                       target='_blank' href='#' id='curr_clk_maddr'>now</a>" +
                   "                            </span>" +
                   "                        </strong>" +
                   "             </div>" +
-                  "             <div class='col-auto text-center pr-0 ml-2'>" +
-                  "                <div class='btn-group float-left' role='group' " +
+                  "             <div class='col-auto text-center pe-0 ms-2'>" +
+                  "                <div class='btn-group float-start' role='group' " +
                   "                  aria-label='State information for now'>" +
-                  "                          <button class='btn btn-outline-dark btn-sm col-auto float-right'" +
+                  "                          <button class='btn btn-outline-secondary btn-sm col-auto float-end'" +
                   "                                  onclick='wepsim_clipboard_CopyFromTextarea(\"end_state1\");" +
                   "                                           wepsim_state_results_empty();" +
                   "                                           var curr_tag = $(\"#curr_clk_maddr\").html();" +
                   "                                           $(\"#s_clip\").html(curr_tag);" +
                   "                                           return false;'" +
                   "                                  data-inline='true'><span data-langkey='Copy'>Copy</span><span class='d-none d-sm-inline-flex'>&nbsp;<span data-langkey='to clipboard'>to clipboard</span></span></button>" +
-                  "                          <button class='btn btn-outline-dark btn-sm col-auto float-right'" +
+                  "                          <button class='btn btn-outline-secondary btn-sm col-auto float-end'" +
                   "                                  onclick='var txt_chklst1 = get_clipboard_copy();" +
                   "                                           var obj_exp1    = simcore_simstate_checklist2state(txt_chklst1);" +
                   "                                           var txt_chklst2 = $(\"#end_state1\").val();" +
@@ -120,20 +120,20 @@
                   "                                           wepsim_dialog_check_state(obj_exp1, obj_exp2);" +
                   "                                           $(\"#check_results_scroll1\").collapse(\"show\");'" +
                   "                                  type='button'><span data-langkey='Check'>Check</span> <span class='d-none d-md-inline-flex'><span data-langkey='differences with clipboard state'>differences with clipboard state</span></span></button>" +
-                  "                          <button class='btn btn-outline-dark btn-sm col-auto float-right'" +
-                  "                                  data-toggle='collapse' data-target='#collapse_X'>&plusmn; <span data-langkey='Show'>Show</span></button>" +
+                  "                          <button class='btn btn-outline-secondary btn-sm col-auto float-end'" +
+                  "                                  data-bs-toggle='collapse' data-bs-target='#collapse_X'>&plusmn; <span data-langkey='Show'>Show</span></button>" +
                   "                </div>" +
                   "             </div>" +
                   "             </div>" +
                   "" +
-                  "             <div class='row'" +
-                  "                  style='max-height:40vh; width:inherit; overflow:auto; -webkit-overflow-scrolling:touch;'>" +
+                  "             <div class='row'>" +
                   "             <div class='col p-1'>" +
                   "                <div id='collapse_X' class='mt-2 collapse show'>" +
                   "                        <form id='end_state_form1'" +
                   "                              class='form-horizontal mb-2'" +
-                  "                              style='white-space:wrap; overflow-y:auto; -webkit-overflow-scrolling:touch; width:100%;'>" +
+                  "                              style='white-space:wrap; width:100%;'>" +
                   "                           <label class='my-0' for='end_state1'>state:</label>" +
+                  "                           <div style='max-height:35vh; width:inherit; overflow:auto; -webkit-overflow-scrolling:touch;'>" +
                   "                           <textarea aria-label='current_state'" +
                   "                                     placeholder='Default...'" +
                   "                                     id='end_state1'" +
@@ -147,6 +147,7 @@
                   "                                     class='form-control input-xs'" +
                   "                                     rows='5'></textarea>" +
                   "                        </form>" +
+                  "                        </div>" +
                   "                </div>" +
                   "             </div>" +
                   "             </div>" +
@@ -163,26 +164,26 @@
         {
              o = "" ;
 
-             o += "<div class='card mb-1'>" +
+             o += "<div class='card mb-2 border-secondary'>" +
                   "  <div class='card-header text-white bg-dark p-1' id='state_header_2'>" +
                   "    <h5 class='m-0'>" +
-                  "          <a data-toggle='collapse' href='#history3'><span class='text-white bg-dark' data-langkey='History'>History</span></a>:&nbsp;" +
+                  "          <a data-bs-toggle='collapse' href='#history3' class='btn btn-sm fs-5 float-start p-0'><span class='text-white bg-dark' data-langkey='History'>History</span></a>:&nbsp;" +
                   "" +
-                  "          <div class='dropdown float-right'>" +
-                  "            <button class='btn btn-sm btn-light text-danger py-0 mx-1 float-right col-auto dropdown-toggle' " +
-                  "                    type='button' id='resetyn2' data-toggle='dropdown' " +
+                  "          <div class='dropdown float-end'>" +
+                  "            <button class='btn btn-sm text-danger mx-1 float-end col-auto dropdown-toggle bg-body-tertiary' " +
+                  "                    type='button' id='resetyn2' data-bs-toggle='dropdown' " +
                   "                    aria-haspopup='true' aria-expanded='false' " +
                   "                    ><span data-langkey='Reset'>Reset</span><span class='d-none d-sm-inline-flex'>&nbsp;<span data-langkey='history'>history</span></span></button>" +
                   "            </button>" +
                   "            <div class='dropdown-menu' aria-labelledby='resetyn2'>" +
-                  "             <a class='dropdown-item py-2 bg-white text-danger' type='button' " +
+                  "             <a class='dropdown-item py-2 bg-body text-danger' type='button' " +
                   "                onclick='wepsim_state_history_reset();" +
                   "                         wepsim_notify_success(\"<strong>INFO</strong>\", \"Removed all !.\");" +
                   "                         wepsim_state_history_list() ;" +
                   "                         return false;'" +
                   "                 ><span data-langkey='Yes'>Yes</span></a>" +
                   "              <div class='dropdown-divider'></div>" +
-                  "              <a class='dropdown-item py-2 bg-white text-info' type='button' " +
+                  "              <a class='dropdown-item py-2 bg-body text-info' type='button' " +
                   "                 ><span data-langkey='No'>No</span></a>" +
                   "            </div>" +
                   "          </div>" +
@@ -191,11 +192,11 @@
                   "  </div>" +
                   "  <div id='history3b' class='collapse show' aria-labelledby='state_header_2'>" +
                   "    <div class='card-body p-1'>" +
-                  "        <div class='container-fluid ml-1 pb-2 collapse show' id='history3'" +
+                  "        <div class='container-fluid ms-1 pb-2 collapse show' id='history3'" +
                   "             style='max-height:40vh; width:inherit; overflow:auto; -webkit-overflow-scrolling:touch;'>" +
                   "             <div id='history1'>" +
                   "                  <div class='pt-2'></div>" +
-                  "                  <span style='background-color:#FCFC00'>&lt;<span data-langkey='Empty history'>Empty history</span>&gt;</span>" +
+                  "                  <span class='bg-warning text-dark bg-opacity-75'>&lt;<span data-langkey='Empty history'>Empty history</span>&gt;</span>" +
                   "             </div>" +
                   "        </div>" +
                   "    </div>" +
@@ -209,11 +210,11 @@
         {
              o = "" ;
 
-             o += "<div class='card mb-1'>" +
+             o += "<div class='card mb-1 border-secondary'>" +
                   "  <div class='card-header text-white bg-dark p-1' id='state_header_3'>" +
                   "    <h5 class='m-0'>" +
-                  "            <a data-toggle='collapse' href='#check_results_scroll1'><span class='text-white bg-dark' data-langkey='Differences'>Differences</span></a>:" +
-                  "            <span class='btn btn-light btn-sm float-right py-0'" +
+                  "            <a data-bs-toggle='collapse' href='#check_results_scroll1' class='btn btn-sm fs-5 float-start p-0'><span class='text-white bg-dark' data-langkey='Differences'>Differences</span></a>:" +
+                  "            <span class='btn bg-body-tertiary text-primary border-secondary btn-sm float-end'" +
                   "                  onclick='wepsim_clipboard_CopyFromDiv(\"check_results_scroll1\");" +
                   "                           return false;'" +
                   "                  data-inline='true'>" +
@@ -224,17 +225,17 @@
                   "  </div>" +
                   "  <div id='check_results_scroll1b' class='collapse show' aria-labelledby='state_header_3'>" +
                   "    <div class='card-body p-1'>" +
-                  "        <div class='container-fluid ml-1 pb-2 collapse show' id='check_results_scroll1'" +
+                  "        <div class='container-fluid ms-1 pb-2 collapse show' id='check_results_scroll1'" +
                   "             style='max-height:40vh; width:inherit; overflow-y:auto; -webkit-overflow-scrolling:touch;' >" +
                   "             <div class='row align-items-center'>" +
-                  "             <div class='col-auto text-center flex-column d-flex pr-0'>" +
-                  "                  <span id='s_clip' class='badge badge-pill border-secondary border m-2 shadow'>clipboard</span>" +
-                  "                  <div class='row' style='max-height:16vh'><div class='col border-right border-dark'>&nbsp;</div><div class='col'>&nbsp;</div></div>" +
-                  "                  <span id='s_ref'  class='badge badge-pill border-secondary border m-2 shadow'>reference</span>" +
+                  "             <div class='col-auto text-center flex-column d-flex pe-0'>" +
+                  "                  <span id='s_clip' class='badge badge-pill text-body border-secondary border m-2 shadow'>clipboard</span>" +
+                  "                  <div class='row' style='max-height:16vh'><div class='col border-end border-secondary'>&nbsp;</div><div class='col'>&nbsp;</div></div>" +
+                  "                  <span id='s_ref'  class='badge badge-pill text-body border-secondary border m-2 shadow'>reference</span>" +
                   "             </div>" +
-                  "             <div class='col py-2 pl-2'>" +
+                  "             <div class='col py-2 ps-2'>" +
                   "                  <div id='check_results1'>" +
-                  "                       <span style='background-color:#FCFC00'>&lt;<span data-langkey='Empty (only modified values are shown)'>Empty (only modified values are shown)</span>&gt;</span>" +
+                  "                       <span class='bg-warning text-dark bg-opacity-75'>&lt;<span data-langkey='Empty (only modified values are shown)'>Empty (only modified values are shown)</span>&gt;</span>" +
                   "                  </div>" +
                   "             </div>" +
                   "             </div>" +
@@ -254,7 +255,7 @@
         function wepsim_state_history_empty ( )
         {
              var empty_history = '<div class="pt-2"></div>' +
-                                 '<span style="background-color:#FCFC00">' +
+                                 '<span class="bg-warning text-dark bg-opacity-75">' +
                                  '&lt;<span data-langkey="Empty history">Empty history</span>&gt;' +
                                  '</span>' ;
 
@@ -271,7 +272,7 @@
                  return ;
              }
 
-             $("[data-toggle=popover4]").popover('hide') ;
+             wepsim_popovers_hide("[data-bs-toggle=popover4]") ;
 
              var  t = 0 ;
              var it = '' ;
@@ -284,33 +285,33 @@
                  it = t.getFullYear() + '-' + (t.getMonth()+1) + '-' + t.getDate() + '-' +
                       t.getHours()    + '-' + t.getMinutes()   + '-' + t.getSeconds() + '-' + t.getMilliseconds() ;
 
-                 tt = '<div id="popover-content-' + it + '" class="d-none bg-light">' +
+                 tt = '<div id="popover-content-' + it + '" class="d-none bg-body-tertiary">' +
                       ws_info.state_history[i].title + '<br>' +
                       '<b>was inserted at:</b><br>' +
                       'Date: ' + t.getFullYear() + '-' + (t.getMonth()+1) + '-' + t.getDate() + '<br>' +
                       'Hour: ' + t.getHours()    + ':' + t.getMinutes()   + ':' + t.getSeconds() + '-' + t.getMilliseconds() + '<br>' +
                       '<button type="button" id="close" data-role="none" ' +
                       '        class="btn btn-sm btn-danger w-100 p-0" ' +
-                      '        onclick="$(\'#' + it + '\').popover(\'hide\');"><span data-langkey="Close">Close</span></button>' +
+                      '        onclick="wepsim_popover_hide("' + it + '");"><span data-langkey="Close">Close</span></button>' +
                       '</div>' ;
 
                  vrow = '' ;
                  if (i != 0)
-                     vrow = '<div class="row h-100"><div class="col border-right border-dark">&nbsp;</div><div class="col">&nbsp;</div></div>' ;
+                     vrow = '<div class="row h-100"><div class="col border-end border-secondary">&nbsp;</div><div class="col">&nbsp;</div></div>' ;
 
                  o += '  <div class="row">' +
-                      '       <div class="col-auto text-center flex-column d-flex pr-0">' +
+                      '       <div class="col-auto text-center flex-column d-flex pe-0">' +
                       '              <strong class="m-2">' +
                       '              <span class="badge badge-pill border-secondary border shadow">' +
-                      '                         <a data-toggle="collapse" data-target="#collapse_'+i+'" ' +
-                      '                       class="col-auto p-0 text-decoration-none text-reset" target="_blank" href="#">' + ws_info.state_history[i].title_short + '</a>' +
+                      '                         <a data-bs-toggle="collapse" data-bs-target="#collapse_'+i+'" ' +
+                      '                       class="col-auto p-0 text-decoration-none" target="_blank" href="#">' + ws_info.state_history[i].title_short + '</a>' +
                       '              </span>' +
                       '              </strong>' +
                                       vrow +
                       '       </div>' +
-                      '       <div class="col py-2 pl-0">' +
+                      '       <div class="col py-2 ps-0">' +
                       '             <div class="btn-group float-none" role="group" aria-label="State information for ' + it + '">' +
-                      '                   <button class="btn btn-outline-dark btn-sm col-auto float-right"' +
+                      '                   <button class="btn btn-outline-secondary btn-sm col-auto float-end"' +
                       '                           onclick="wepsim_state_results_empty();  ' +
                       '                                    $(\'#collapse_' + i + '\').collapse(\'show\'); ' +
                       '                                    wepsim_clipboard_CopyFromDiv(\'state_' + i + '\');  ' +
@@ -318,7 +319,7 @@
                       '                                    $(\'#s_clip\').html(\'' + ws_info.state_history[i].title_short + '\'); ' +
                       '                                    $(\'#s_ref\').html(\'reference\'); " ' +
                       '                           type="button"><span data-langkey="Copy">Copy</span><span class="d-none d-sm-inline-flex">&nbsp;<span data-langkey="to clipboard">to clipboard</span></span></button>' +
-                      '                   <button class="btn btn-outline-dark btn-sm col-auto float-right"' +
+                      '                   <button class="btn btn-outline-secondary btn-sm col-auto float-end"' +
                       '                           onclick="var txt_chklst1 = get_clipboard_copy();' +
                       '                                    var obj_exp1    = simcore_simstate_checklist2state(txt_chklst1);' +
                       '                                    var txt_chklst2 = $(\'#ta_state_'+i+'\').val();' +
@@ -327,8 +328,8 @@
                       '                                    $(\'#s_ref\').html(\'' + ws_info.state_history[i].title_short + '\'); ' +
                       '                                    $(\'#check_results_scroll1\').collapse(\'show\');"' +
                       '                           type="button"><span data-langkey="Check">Check</span> <span class="d-none d-md-inline-flex">differences with clipboard state</span></button>' +
-                      '                   <button class="btn btn-outline-dark btn-sm col-auto float-right"' +
-                      '                                data-toggle="collapse" data-target="#collapse_'+i+'">&plusmn; <span data-langkey="Show">Show</span></button>' +
+                      '                   <button class="btn btn-outline-secondary btn-sm col-auto float-end"' +
+                      '                                data-bs-toggle="collapse" data-bs-target="#collapse_'+i+'">&plusmn; <span data-langkey="Show">Show</span></button>' +
                       '             </div>' +
                                     tt +
                       '             <div id="collapse_' + i + '" class="border border-secondary mt-2 collapse">' +
@@ -379,11 +380,9 @@
                   neltos = neltos + nceltos ;
              }
 
-             ga('send', 'event', 'state',
-                'state.dump',
-                'state.dump' + '.ci=' + get_value(simhw_sim_state('REG_IR_DECO')) +
-                               ',neltos=' + neltos +
-                               ga_str) ;
+             simcore_ga('state', 'state.dump',
+                        'state.dump' + '.ci=' + get_value(simhw_sim_state('REG_IR_DECO')) +
+                                       ',neltos=' + neltos + ga_str) ;
         }
 
 
@@ -402,7 +401,7 @@
 
         function wepsim_state_results_empty ( )
         {
-    	     var empty_results = '<span style="background-color:#FCFC00">' +
+    	     var empty_results = '<span class="bg-warning text-dark bg-opacity-75">' +
                                  '&lt;Empty (only modified values are shown)&gt;' +
                                  '</span>' ;
 
@@ -426,12 +425,11 @@
             $('#check_results1').html(msg) ;
 
             // ga
-            ga('send', 'event', 'state',
-               'state.check',
-               'state.check' + ',ci=' + get_value(simhw_sim_state('REG_IR_DECO')) +
-                               '.a='  + obj_result.neltos_expected +
-                               ',b='  + obj_result.neltos_obtained +
-                               ',sd=' + obj_result.errors) ;
+            simcore_ga('state', 'state.check',
+		       'state.check' + ',ci=' + get_value(simhw_sim_state('REG_IR_DECO')) +
+				       '.a='  + obj_result.neltos_expected +
+				       ',b='  + obj_result.neltos_obtained +
+				       ',sd=' + obj_result.errors) ;
 
             return true ;
         }

@@ -3,7 +3,7 @@ set -x
 
 
 #*
-#*  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+#*  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
 #*
 #*  This file is part of WepSIM.
 #*
@@ -23,7 +23,7 @@ set -x
 
 
 echo "checking sim_core..."
- jshint ./sim_core/sim_core_ui.js
+#jshint ./sim_core/sim_core_ui.js
  jshint ./sim_core/sim_core_voice.js
  jshint ./sim_core/sim_api_stateshots.js
  jshint ./sim_core/sim_api_native.js
@@ -35,31 +35,45 @@ echo "checking sim_core..."
  jshint ./sim_core/sim_core_rest.js
 
 echo "checking sim_sw..."
- jshint ./sim_sw/sim_lang.js
-#jshint ./sim_sw/sim_lang_firm.js
-#jshint ./sim_sw/sim_lang_asm.js
+ jshint ./sim_sw/firmware/lexical.js
+ jshint ./sim_sw/firmware/firm_mcode.js
+ jshint ./sim_sw/firmware/firm_begin.js
+ jshint ./sim_sw/firmware/firm_registers.js
+ jshint ./sim_sw/firmware/firm_pseudoinstructions.js
+#jshint ./sim_sw/firmware/firm_instruction_v1.js
+#jshint ./sim_sw/firmware/firm_fields_v1.js
+#jshint ./sim_sw/firmware/firm_fields_v2.js
+#jshint ./sim_sw/firmware/firm_instruction.js
+#jshint ./sim_sw/firmware.js
+ jshint ./sim_sw/firmware/creator2native.js
+ jshint ./sim_sw/assembly/lexical.js
+#jshint ./sim_sw/assembly/memory_segments.js
+ jshint ./sim_sw/assembly/lexical.js
+#jshint ./sim_sw/assembly.js
 
 echo "checking sim_hw..."
  jshint ./sim_hw/sim_hw_index.js
  jshint ./sim_hw/sim_hw_values.js
 #jshint ./sim_hw/sim_hw_behavior.js
- jshint ./sim_hw/sim_hw_poc/sim_poc.js
- jshint ./sim_hw/sim_hw_poc/sim_hw_mem.js
- jshint ./sim_hw/sim_hw_poc/sim_hw_board.js
- jshint ./sim_hw/sim_hw_poc/sim_hw_kbd.js
- jshint ./sim_hw/sim_hw_poc/sim_hw_scr.js
- jshint ./sim_hw/sim_hw_poc/sim_hw_io.js
-#jshint ./sim_hw/sim_hw_poc/sim_hw_cpu.js
- jshint ./sim_hw/sim_hw_poc/sim_hw_l3d.js
+ jshint ./sim_hw/sim_hw_eltos.js
 
- jshint ./sim_hw/sim_hw_ep/sim_hw_mem.js
- jshint ./sim_hw/sim_hw_ep/sim_ep.js
- jshint ./sim_hw/sim_hw_ep/sim_hw_io.js
- jshint ./sim_hw/sim_hw_ep/sim_hw_board.js
- jshint ./sim_hw/sim_hw_ep/sim_hw_kbd.js
- jshint ./sim_hw/sim_hw_ep/sim_hw_scr.js
-#jshint ./sim_hw/sim_hw_ep/sim_hw_cpu.js
- jshint ./sim_hw/sim_hw_ep/sim_hw_l3d.js
+ jshint ./sim_hw/hw_items/board_base.js
+#jshint ./sim_hw/hw_items/cpu_ep.js
+#jshint ./sim_hw/hw_items/cpu_rv.js
+#jshint ./sim_hw/hw_items/cpu_poc.js
+#jshint ./sim_hw/hw_items/cu_poc.js
+ jshint ./sim_hw/hw_items/mem_ep.js
+#jshint ./sim_hw/hw_items/mem_rv.js
+#jshint ./sim_hw/hw_items/mem_poc.js
+ jshint ./sim_hw/hw_items/io_screen_base.js
+ jshint ./sim_hw/hw_items/io_keyboard_base.js
+ jshint ./sim_hw/hw_items/io_clk_base.js
+#jshint ./sim_hw/hw_items/io_l3d_ep.js
+#jshint ./sim_hw/hw_items/io_ldm_ep.js
+
+ jshint ./sim_hw/hw_ep.js
+ jshint ./sim_hw/hw_poc.js
+#jshint ./sim_hw/hw_rv.js
 
 echo "checking wepsim_core..."
  jshint ./wepsim_core/wepsim_help_commands.js
@@ -68,7 +82,7 @@ echo "checking wepsim_core..."
  jshint ./wepsim_core/wepsim_preload.js
  jshint ./wepsim_core/wepsim_share.js
  jshint ./wepsim_core/wepsim_voice.js
- jshint ./wepsim_core/wepsim_execute.js
+#jshint ./wepsim_core/wepsim_execute.js
  jshint ./wepsim_core/wepsim_dbg_breakpointicons.js
  jshint ./wepsim_core/wepsim_tour_commands.js
  jshint ./wepsim_core/wepsim_mode.js
@@ -76,9 +90,7 @@ echo "checking wepsim_core..."
  jshint ./wepsim_core/wepsim_dialog.js
  jshint ./wepsim_core/wepsim_state.js
  jshint ./wepsim_core/wepsim_tutorial_simpleusage.js
- jshint ./wepsim_core/wepsim_config.js
 #jshint ./wepsim_core/wepsim_clipboard.js
- jshint ./wepsim_core/wepsim_config_commands.js
  jshint ./wepsim_core/wepsim_tutorial_welcome.js
  jshint ./wepsim_core/wepsim_notify.js
  jshint ./wepsim_core/wepsim_example.js
@@ -95,8 +107,8 @@ echo "checking wepsim_web..."
  jshint ./wepsim_web/wepsim_uielto_compilationbar.js
  jshint ./wepsim_web/wepsim_uielto_console.js
  jshint ./wepsim_web/wepsim_uielto_cpu.js
- jshint ./wepsim_web/wepsim_uielto_cpusvg.js
- jshint ./wepsim_web/wepsim_uielto_dbg_asm.js
+#jshint ./wepsim_web/wepsim_uielto_cpusvg.js
+#jshint ./wepsim_web/wepsim_uielto_dbg_asm.js
  jshint ./wepsim_web/wepsim_uielto_dbg_mc.js
  jshint ./wepsim_web/wepsim_uielto_editas.js
  jshint ./wepsim_web/wepsim_uielto_editmc.js
@@ -108,6 +120,7 @@ echo "checking wepsim_web..."
  jshint ./wepsim_web/wepsim_uielto_io_config.js
  jshint ./wepsim_web/wepsim_uielto_io_info.js
  jshint ./wepsim_web/wepsim_uielto_l3d.js
+ jshint ./wepsim_web/wepsim_uielto_ldm.js
  jshint ./wepsim_web/wepsim_uielto_listcfg.js
  jshint ./wepsim_web/wepsim_uielto_listexample.js
  jshint ./wepsim_web/wepsim_uielto_listprocessor.js
@@ -122,13 +135,22 @@ echo "checking wepsim_web..."
  jshint ./wepsim_web/wepsim_uielto_states.js
  jshint ./wepsim_web/wepsim_uielto_toolbar.js
  jshint ./wepsim_web/wepsim_uielto_topbar.js
- jshint ./wepsim_web/wepsim_uipacker_ctoasm.js
+ jshint ./wepsim_web/wepsim_uielto_slider_cpucu.js
+ jshint ./wepsim_web/wepsim_uielto_slider_details.js
+ jshint ./wepsim_web/wepsim_uipacker_cpu_cu.js
+ jshint ./wepsim_web/wepsim_uipacker_cto_asm.js
+ jshint ./wepsim_web/wepsim_uipacker_sim_mic_asm.js
  jshint ./wepsim_web/wepsim_uipacker_ddown_info.js
  jshint ./wepsim_web/wepsim_uipacker_ddown_sel.js
- jshint ./wepsim_web/wepsim_web_api.js
+ jshint ./wepsim_web/wepsim_uiscreen_classic.js
+ jshint ./wepsim_web/wepsim_uiscreen_compact.js
+ jshint ./wepsim_web/wepsim_uiscreen_main.js
+#jshint ./wepsim_web/wepsim_web_api.js
  jshint ./wepsim_web/wepsim_web_editor.js
 #jshint ./wepsim_web/wepsim_web_pwa.js
  jshint ./wepsim_web/wepsim_web_simulator.js
+ jshint ./wepsim_web/wepsim_web_ui_config.js
+ jshint ./wepsim_web/wepsim_web_ui_config_commands.js
  jshint ./wepsim_web/wepsim_web_ui_dialogs.js
  jshint ./wepsim_web/wepsim_web_ui_quickcfg.js
 
@@ -139,14 +161,16 @@ echo "checking wepsim_nodejs..."
 echo "checking wepsim_i18n..."
  jshint ./wepsim_i18n/i18n.js
 for LANG in es en fr kr ja it pt hi zh_cn ru sv de; do
- jshint ./wepsim_i18n/$LANG/states.js
  jshint ./wepsim_i18n/$LANG/gui.js
- jshint ./wepsim_i18n/$LANG/cfg.js
- jshint ./wepsim_i18n/$LANG/examples.js
- jshint ./wepsim_i18n/$LANG/help.js
- jshint ./wepsim_i18n/$LANG/dialogs.js
- jshint ./wepsim_i18n/$LANG/tour-intro.js
  jshint ./wepsim_i18n/$LANG/tutorial-welcome.js
  jshint ./wepsim_i18n/$LANG/tutorial-simpleusage.js
+ jshint ./wepsim_i18n/$LANG/tour-intro.js
+ jshint ./wepsim_i18n/$LANG/cfg.js
+ jshint ./wepsim_i18n/$LANG/help.js
+ jshint ./wepsim_i18n/$LANG/states.js
+ jshint ./wepsim_i18n/$LANG/examples.js
+ jshint ./wepsim_i18n/$LANG/compiler.js
+ jshint ./wepsim_i18n/$LANG/hw.js
+ jshint ./wepsim_i18n/$LANG/dialogs.js
 done
 

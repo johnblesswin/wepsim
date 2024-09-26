@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -38,67 +38,84 @@
             return false ;
 	}
 
+	// Next two functions taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+	function base_escapeRegExp ( string )
+	{
+	    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+	}
+
+	function base_replaceAll ( base_str, match, replacement )
+	{
+	    // ES12+
+	    if (typeof base_str.replaceAll != "undefined") {
+	        return base_str.replaceAll(match, replacement) ;
+	    }
+
+	    // older javascript engines
+	    return base_str.replace(new RegExp(base_escapeRegExp(match), 'g'), ()=>replacement);
+	}
+
 
         /*
          *  checking & updating
          */
 
-        function check_buses ( fired )
+        function update_cpu_bus_fire ( tri_mask, tri_index )
         {
-            var tri_state_names = simhw_internalState('tri_state_names') ;
+	     // 1.- number of active tri-state
+	     var n = 0 ;
+	     var a = 0 ;
+	     var e = -1 ;
+	     for (var i=0; i<32; i++)
+             {
+		  a = tri_mask & Math.pow(2, i) ;
+                  if (a > 0) {
+	              e = i ;
+		      n = n + 1 ;
+	          }
+	     }
 
-            // Ti + Tj
-            if (tri_state_names.indexOf(fired) == -1) {
-                return;
-            }
+	     // 2.- paint the bus if any tri-state is active
+	     if (n > 0) {
+	         var tri_state_names = simhw_internalState('tri_state_names') ;
+	         var tri_name = tri_state_names[e] ;
+	         update_draw(simhw_sim_signal(tri_name), 1) ;
+	     }
 
-            // TD + R
-            if (simhw_internalState_get('fire_visible','databus') == true)
-            {
-                update_bus_visibility('databus_fire', 'hidden') ;
-                simhw_internalState_set('fire_visible', 'databus', false) ;
-            }
-            if ( (simhw_sim_signal("TD").value != 0) && (simhw_sim_signal("R").value != 0) )
-            {
-                update_bus_visibility('databus_fire', 'visible') ;
-                simhw_internalState_set('fire_visible', 'databus', true) ;
-                simhw_sim_state("BUS_DB").value = 0xFFFFFFFF;
-            }
+	     // 3.- check if more than one tri-state is active
+	     if (n > 1)
+             {
+	         update_bus_visibility('internalbus_fire', 'visible') ;
+	         simhw_internalState_set('fire_visible', 'internalbus', true) ;
 
-            // 1.- counting the number of active tri-states
-            var tri_name = "";
-            var tri_activated = 0;
-	    var tri_activated_name  = "";
-	    var tri_activated_value = 0;
-            for (var i=0; i<tri_state_names.length; i++)
-            {
-		 tri_activated_name  = tri_state_names[i] ;
-                 tri_activated_value = parseInt(get_value(simhw_sim_signal(tri_activated_name))) ;
-                 tri_activated      += tri_activated_value ;
+	         simhw_sim_state("BUS_IB").value = 0xFFFFFFFF;
+	     }
+	     else {
+	         update_bus_visibility('internalbus_fire', 'hidden') ;
+	         simhw_internalState_set('fire_visible', 'internalbus', false) ;
+	     }
 
-		 if (tri_activated_value > 0)
-		     tri_name = tri_activated_name ;
-                 if (tri_activated > 1)
-                     break ;
-            }
+             // return the number of activated tri-states
+             return n ;
+        }
 
-            // 2.- paint the bus if any tri-state is active
-            if (tri_activated > 0) {
-                update_draw(simhw_sim_signal(tri_name), 1) ;
-            }
+        function update_system_bus_fire ( number_active_tri )
+        {
+	     if (simhw_internalState_get('fire_visible', 'databus') == true)
+	     {
+		 update_bus_visibility('databus_fire', 'hidden') ;
+		 simhw_internalState_set('fire_visible', 'databus', false) ;
+	     }
+	     if (number_active_tri > 1)
+	     {
+		 update_bus_visibility('databus_fire', 'visible') ;
+		 simhw_internalState_set('fire_visible', 'databus', true) ;
 
-            // 3.- check if more than one tri-state is active
-            if (simhw_internalState_get('fire_visible','internalbus') == true)
-            {
-                update_bus_visibility('internalbus_fire', 'hidden') ;
-                simhw_internalState_set('fire_visible', 'internalbus', false) ;
-            }
-            if (tri_activated > 1)
-            {
-                update_bus_visibility('internalbus_fire', 'visible') ;
-                simhw_internalState_set('fire_visible', 'internalbus', true) ;
-                simhw_sim_state("BUS_IB").value = 0xFFFFFFFF;
-            }
+		 simhw_sim_state("BUS_DB").value = 0xFFFFFFFF;
+	     }
+
+             // return the number of activated tri-states
+             return number_active_tri ;
         }
 
 
@@ -236,7 +253,8 @@
                  var mc_obj = simhw_internalState('MC') ;
                  var mcelto = control_memory_get(mc_obj, curr_maddr) ;
                  if (typeof mcelto === "undefined") {
-                     mcelto = {} ;
+                     // mcelto = {} ;
+                        mcelto = { value: {}, comments: null } ;
                  }
 
                  mcelto.value[key] = simhw_sim_signal(key).value ;
@@ -295,15 +313,27 @@
                }
 
 	       var ma = SIMWARE['firmware'][i]["mc-start"] ;
-	       var co = parseInt(SIMWARE['firmware'][i]["co"], 2) ;
-               var cop = 0 ;
-	       if (typeof SIMWARE['firmware'][i]["cop"] != "undefined") {
-	           cop = parseInt(SIMWARE['firmware'][i]["cop"], 2) ;
-               }
 
-               var rom_addr = 64*co + cop ;
+           if (SIMWARE.metadata.version == 2) {
+               var oc = parseInt(SIMWARE['firmware'][i]["oc"], 2) ;
+                var eoc = 0 ;
+                if (typeof SIMWARE['firmware'][i]["eoc"] != "undefined") {
+                    eoc = parseInt(SIMWARE['firmware'][i]["eoc"], 2) ;
+                    }
+
+                var rom_addr = 64*oc + eoc ;
+            } else {
+                var co = parseInt(SIMWARE['firmware'][i]["co"], 2) ;
+                var cop = 0 ;
+                if (typeof SIMWARE['firmware'][i]["cop"] != "undefined") {
+                    cop = parseInt(SIMWARE['firmware'][i]["cop"], 2) ;
+                    }
+
+                var rom_addr = 64*co + cop ;
+            }
+
 	       simhw_internalState_set('ROM', rom_addr, ma) ;
-               SIMWARE['cihash'][rom_addr] = SIMWARE['firmware'][i]['signature'] ;
+               SIMWARE['hash_ci'][rom_addr] = SIMWARE['firmware'][i]['signature'] ;
 	    }
 
 	    // 4.- load the MP from SIMWARE['mp']
@@ -325,7 +355,13 @@
 	         simhw_internalState_set('segments', key, SIMWARE['seg'][key]) ;
 	    }
 
-	    // 6.- show memories...
+	    // 6.- load the CM with default values...
+            var curr_cfg = simhw_internalState('CM_cfg') ;
+            var curr_cm  = cache_memory_init3(curr_cfg) ;
+            simhw_internalState_reset('CM_cfg', curr_cfg) ;
+            simhw_internalState_reset('CM',     curr_cm) ;
+
+	    // 7.- show memories...
             show_main_memory   (mp_obj, 0, true, true) ;
             show_control_memory(mc_obj, 0, true) ;
 	}

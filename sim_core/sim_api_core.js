@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -147,6 +147,9 @@
         {
             var sim_components = simhw_sim_components() ;
 
+            if (typeof sim_components[component_name].details_ui === "undefined") {
+                return simcore_do_nothing_handler ;
+            }
             if (typeof sim_components[component_name].details_ui[detail_id][action_name] === "undefined") {
                 return simcore_do_nothing_handler ;
             }
@@ -267,8 +270,8 @@
 	        var SIMWARE = get_simware();
 
                 if (
-                     (! ((typeof curr_segments['.ktext'] != "undefined") && (SIMWARE.labels2.kmain)) ) &&
-                     (! ((typeof curr_segments['.text']  != "undefined") && (SIMWARE.labels2.main))   )
+                     (! ((typeof curr_segments['.ktext'] != "undefined") && (SIMWARE.labels_asm.kmain)) ) &&
+                     (! ((typeof curr_segments['.text']  != "undefined") && (SIMWARE.labels_asm.main))   )
                 )
                 {
 		     ret.msg = "labels 'kmain' (in .ktext) or 'main' (in .text) do not exist!" ;
@@ -282,6 +285,17 @@
         /**
          * Check if simulation can continue its execution
          */
+        function simcore_packerror_at ( reg_maddr, msg )
+        {
+                var ret = {} ;
+
+                var hex_maddr = "0x" + parseInt(reg_maddr).toString(16) ;
+                ret.ok  = false ;
+                ret.msg = msg + " at maddr=" + hex_maddr + "." ;
+
+                return ret ;
+        }
+
         function simcore_check_if_can_continue2 ( reg_maddr, reg_pc )
         {
                 var ret = {} ;
@@ -291,12 +305,14 @@
                 // if (MC[reg_maddr] == undefined) -> cannot continue
                 var curr_MC = simhw_internalState('MC') ;
                 var mcelto  = control_memory_get(curr_MC, reg_maddr) ;
-                if (typeof mcelto === "undefined")
-                {
-                    var hex_maddr = "0x" + parseInt(reg_maddr).toString(16) ;
-                    ret.ok  = false ;
-                    ret.msg = "Error: undefined microinstruction at " + hex_maddr + "." ;
-                    return ret ;
+                if (typeof mcelto === "undefined") {
+                    return simcore_packerror_at(reg_maddr, 'Error: undefined microinstruction') ;
+                }
+
+                // if (two or more tri-states are active) -> cannot continue
+                if ( (simhw_internalState_get('fire_visible', 'databus') == true) ||
+                     (simhw_internalState_get('fire_visible', 'internalbus') == true) ) {
+                     return simcore_packerror_at(reg_maddr, 'Error: two or more tri-states are active') ;
                 }
 
                 // if (inside *text) -> can continue
@@ -310,11 +326,14 @@
 
                 // if (border *text) && (native code) && (reg_maddr === 0) -> can continue
                 if ( (mcelto.is_native) && (0 === reg_maddr) ) {
-                      return ret ;
+                    if ( (reg_pc == curr_segments['.ktext'].end) || (reg_pc == curr_segments['.text'].end) ) {
+                          return ret;
+		    }
                 }
 
                 // if (border *text) && (reg_maddr !== 0) -> can continue
-                if (0 !== reg_maddr) {
+                if ( (false == mcelto.is_native) && (0 !== reg_maddr) ) {  // TEST
+             // if (0 !== reg_maddr) {
                     if ( (reg_pc == curr_segments['.ktext'].end) || (reg_pc == curr_segments['.text'].end) ) {
                           return ret;
 		    }
@@ -377,14 +396,14 @@
             }
 
 	    // CPU registers initial values
-	    if ((typeof curr_segments['.ktext'] !== "undefined") && (SIMWARE.labels2.kmain))
+	    if ((typeof curr_segments['.ktext'] !== "undefined") && (SIMWARE.labels_asm.kmain))
 	    {
-	         set_value(pc_state, parseInt(SIMWARE.labels2.kmain)) ;
+	         set_value(pc_state, parseInt(SIMWARE.labels_asm.kmain)) ;
 	         show_asmdbg_pc() ;
 	    }
-	    else if ((typeof curr_segments['.text'] !== "undefined") && (SIMWARE.labels2.main))
+	    else if ((typeof curr_segments['.text'] !== "undefined") && (SIMWARE.labels_asm.main))
 	    {
-	         set_value(pc_state, parseInt(SIMWARE.labels2.main)) ;
+	         set_value(pc_state, parseInt(SIMWARE.labels_asm.main)) ;
 	         show_asmdbg_pc() ;
 	    }
 
@@ -492,6 +511,7 @@
                 var limitless = (options.cycles_limit < 0) ;
                 var cur_addr  = 0 ;
                 var mcelto    = null ;
+                var oolimits  = false ;
 
 		do
             	{
@@ -520,8 +540,12 @@
 		        ret.ok  = false ;
 			break ;
 	            }
+
+                    if ((i_clks >= options.cycles_limit) && (-1 != options.cycles_limit)) {
+                        oolimits = true ;
+                    }
             	}
-		while ( (i_clks < options.cycles_limit) && (0 != cur_addr) );
+		while ( (false == oolimits) && (0 != cur_addr) );
 
 		// no_error && native -> perform a second clock-tick...
 		if ( (true == ret.ok) && (mcelto.is_native) )
@@ -609,7 +633,7 @@
 
 		   // next instruction...
     	           ins_executed++ ;
-                   if (ins_executed > options.instruction_limit)
+                   if ( (ins_executed > options.instruction_limit) && (-1 != options.instruction_limit))
     	           {
     	               ret.ok  = false ;
     	               ret.msg = "more than " + options.instruction_limit + " instructions executed before application ends.";
@@ -715,6 +739,34 @@
             set_simware(SIMWAREaddon) ;
     	    update_memories(SIMWARE) ;
     	    simcore_reset() ;
+
+            return ret ;
+        }
+
+        function simcore_assembly_to_binasm ( textToCompile )
+        {
+    	    var ret = {} ;
+    	        ret.msg = "" ;
+    	        ret.ok  = true ;
+
+            // get SIMWARE.firmware
+            var SIMWARE = get_simware() ;
+    	    if (SIMWARE.firmware.length === 0)
+            {
+                ret.msg = 'Empty microcode, please load the microcode first.' ;
+                ret.ok  = false;
+                return ret;
+    	    }
+
+            // Get assembly as binary segment
+            var SIMWAREaddon = wsasm_src2binsrc(SIMWARE, textToCompile, {});
+    	    ret.simware = SIMWAREaddon ;
+            if (SIMWAREaddon.error != null)
+            {
+                ret.msg = SIMWAREaddon.error ;
+                ret.ok  = false;
+                return ret;
+            }
 
             return ret ;
         }

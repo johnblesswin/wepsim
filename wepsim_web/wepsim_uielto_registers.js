@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -24,7 +24,7 @@
          */
 
         /* jshint esversion: 6 */
-        class ws_registers extends HTMLElement
+        class ws_registers extends ws_uielto
         {
 	      constructor ()
 	      {
@@ -35,14 +35,16 @@
                     this.tf_div = "states_ALL" ;
 	      }
 
-	      render ( msg_default )
+	      render ( event_name )
 	      {
                     // html holder
-		    var o1 = "<div class='container text-right'>" +
-		             "<a data-toggle='popover-rfcfg' id='popover-rfcfg' " +
-			     "   tabindex='0' class='m-auto show multi-collapse-3'>" +
+		    var o1 = "<div class='container text-end multi-collapse-3 collapse show'>" +
+                             '<span class="my-0" for="popover-rfcfg" style="min-width:95%">' +
+                             '<span data-langkey="quick config">quick config</span>: ' +
+		             "<a data-bs-toggle='popover-rfcfg' id='popover-rfcfg' " +
+			     "   tabindex='0' class='m-auto'>" +
                              "<strong><strong class='fas fa-wrench text-secondary'></strong></strong>" +
-                             "</a>" +
+                             "</a></span>" +
                              "</div>" +
                              '<div id="' + this.tf_div + '" ' +
                              '     style="width:inherit; overflow-y:auto;"' +
@@ -56,18 +58,7 @@
                     this.innerHTML = o1 ;
 
                     // initialize loaded components
-		    wepsim_init_quickcfg("[data-toggle=popover-rfcfg]",
-			                 "click",
-			                 quick_config_rf,
-					 function(shownEvent) {
-					     i18n_update_tags('cfg') ;
-					     i18n_update_tags('dialogs') ;
-					 }) ;
-	      }
-
-	      connectedCallback ()
-	      {
-		    this.render('') ;
+                    wepsim_quickcfg_init('popreg1') ;
 	      }
         }
 
@@ -120,25 +111,26 @@
 		var o2 = "" ;
 		if (get_cfg('is_editable') == true)
 		{
-		    o2 = "<tr><td class='py-1 px-1' colspan='5' align='center'>" +
+		    o2 = "<tr><td class='py-1 px-1 pt-2' colspan='5' align='center'>" +
                          "<input type='text' id='popover1' value='" + valueui + "' data-mini='true' " +
-                         "       style='width:65%'>&nbsp;" +
-                         "<span class='badge badge-secondary shadow' " +
-                         "      onclick='hex2values_update(\"" + index + "\");'>update</span>" +
+                         "       style='width:65%'>" +
+                         "<span class='badge text-bg-secondary shadow ms-2 py-2' " +
+                         "      onclick='hex2values_update(\"" + index + "\");'>" +
+                         "<span data-langkey='update'>update</span></span>" +
                          "</td></tr>";
                 }
 
-		var TD_B   = "<td class='p-0 pl-1 align-middle'>" ;
+		var TD_B   = "<td class='p-0 ps-1 align-middle'>" ;
                 var TD_E   = "</td>" ;
-                var SG_B2  = "<strong class='rounded text-dark' " +
-                             "        style='background-color:#CEECF5; font-family:monospace; font-size:105%'>" ;
+                var SG_B2  = "<strong class='rounded bg-info-subtle text-body' " +
+                             "        style='font-family:monospace; font-size:105%'>" ;
 		var TD_B1  = TD_B + "<strong>" ;
                 var TD_B2  = TD_B + SG_B2 ;
                 var TD_E12 = "</strong>" + TD_E ;
                 var VAL_B  = SG_B2 + "&nbsp;" ;
                 var VAL_E  = "&nbsp;</strong>&nbsp;" ;
 
-		var o1 = "<table class='table table-bordered table-hover table-sm mb-1'>" +
+		var o1 = "<table class='table table-bordered border-secondary table-hover table-sm mb-1'>" +
 			 "<tbody>" +
 			 "<tr>" + TD_B1 + "hex."   + TD_E12 + TD_B2 + valuehex         + TD_E12 + "</tr>" +
 			 "<tr>" + TD_B1 + "oct."   + TD_E12 + TD_B2 + valueoct         + TD_E12 + "</tr>" +
@@ -192,27 +184,36 @@
            function quick_config_rf_register_names ( )
            {
               var sim_eltos = simhw_sim_states() ;
-              var SIMWARE = get_simware() ;
+              var SIMWARE   = get_simware() ;
+              var o2 = "" ;
 
+              // get: [ 'r10', 'la' ]
               var logical_defined = [] ;
 	      for (var index=0; index < sim_eltos.BR.length; index++)
               {
 	         if (typeof SIMWARE.registers[index] !== "undefined") {
                      logical_defined = SIMWARE.registers[index] ;
+                     break;
                  }
               }
 
-	       var o2 = quickcfg_html_btnreg('R10',
-	 			             "update_cfg(\"RF_display_name\", \"numerical\");" +
-				             "wepsim_show_rf_names();",
-				             'col-6') ;
+              // make menu
+	      o2 += quickcfg_html_btnreg('R10',
+	 			         "update_cfg(\"RF_display_name\", \"numerical\");" +
+				         "wepsim_show_rf_names();",
+				         'col-6') ;
+              if (logical_defined.length == 0)
                    o2 += "<div class='col-6 p-1'></div>" ;
+              else o2 += quickcfg_html_btnreg(logical_defined.join('|'),
+	 			              "update_cfg(\"RF_display_name\", \"logical\");" +
+				              "wepsim_show_rf_names();",
+				              'col-6') ;
 
               for (var i=0; i<logical_defined.length; i++)
               {
 	           o2 += quickcfg_html_btnreg(logical_defined[i],
 		  		              "update_cfg(\"RF_display_name\", \"logical\");" +
-                                              "wepsim_refresh_rf_names(" + i + ");",
+                                              "wepsim_refresh_rf_names(" + (i+1) + ");",
 				              'col-6') ;
               }
 
@@ -256,32 +257,45 @@
             }
         }
 
+        function wepsim_refresh_rf_names_mkname ( disp_name, SIMWARE, index, logical_index )
+        {
+            var br_value = "" ;
+
+            // numerical name
+            if ( ('logical' != disp_name) || (typeof SIMWARE.registers[index] == "undefined") ) {
+	         br_value = "R" + index ;
+	         br_value = br_value.padEnd(3,' ') ;
+                 return br_value ;
+            }
+
+            // all logical name
+            if (logical_index == 0) {
+		 br_value = SIMWARE.registers[index].join('|') ;
+	         br_value = br_value.padEnd(6,' ') ;
+                 return br_value ;
+            }
+
+            // get logical name
+	    br_value = SIMWARE.registers[index][logical_index - 1] ;
+            if (typeof br_value == "undefined") {
+	        br_value = "R" + index ;
+            }
+	    br_value = br_value.padEnd(3,' ') ;
+            return br_value ;
+        }
+
         function wepsim_refresh_rf_names ( logical_index )
         {
 	    var disp_name = get_cfg('RF_display_name') ;
             var sim_eltos = simhw_sim_states() ;
             var SIMWARE   = get_simware() ;
 
-            var br_value = "" ;
 	    for (var index=0; index < sim_eltos.BR.length; index++)
             {
-                 // get name
-		 br_value = "R"  + index ;
-	         if (
-		      ('logical' == disp_name) &&
-                      (logical_index >= 0) &&
-		      (typeof SIMWARE.registers[index]                !== "undefined") &&
-		      (typeof SIMWARE.registers[index][logical_index] !== "undefined")
-		    )
-		 {
-		    br_value = SIMWARE.registers[index][logical_index] ;
-		 }
-		 br_value = br_value.padEnd(3,' ') ;
-
                  // display name
 		 var obj = document.getElementById("name_RF" + index) ;
 		 if (obj != null) {
-		     obj.innerHTML = br_value ;
+		     obj.innerHTML = wepsim_refresh_rf_names_mkname(disp_name, SIMWARE, index, logical_index) ;
 		 }
 	    }
         }
@@ -306,47 +320,55 @@
 		 o1_rn = "R"  + index ;
 		 o1_rn = o1_rn.padEnd(3,' ') ;
 
-		 o1_rf += "<button type='button' class='btn py-0 px-1 mt-1 col-auto' " +
-			  "        style='border-color:#cecece; background-color:#f5f5f5' data-role='none' " +
-                          "        data-toggle='popover-up' data-popover-content='" + index + "' data-container='body' " +
+		 o1_rf += "<button type='button' " +
+                          "        class='btn px-1 py-0 ms-1 mt-1 mb-0 me-0 col-auto border border-secondary bg-body-tertiary' " +
+			  "        style='' data-role='none' " +
+                          "        data-bs-toggle='popover-up' data-popover-content='" + index + "' data-container='body' " +
                           "        id='rf" + index + "'>" +
-                          "<span id='name_RF" + index + "' class='p-0 text-monospace' style='float:center; '>" + o1_rn + "</span>&nbsp;" +
-                          "<span class='badge badge-secondary text-dark' style='background-color:#CEECF5; ' id='tbl_RF"  + index + "'>" +
-			  "<div id='rf_" + index + "'>{{ computed_value }}</div>" +
-                          "</span>" +
+                          "<span id='name_RF" + index + "' class='p-0 font-monospace' style='float:center; '>" + o1_rn + "</span>&nbsp;" +
+			  "<span class='w-100 d-block d-sm-none'></span>" +
+                          "<span class='badge badge-secondary bg-info-subtle text-body' style='' id='tbl_RF"  + index + "'>" +
+                          "<span id='rf_" + index + "'>{{ computed_value }}</span></span>" +
                           "</button>" ;
 	    }
 
             $("#states_BR").html("<div class='d-flex flex-row flex-wrap justify-content-around justify-content-sm-between'>" + o1_rf + "</div>");
 
             // Pop-overs
-	    $("[data-toggle=popover-up]").popover({
+            var popover_cfg = {
 	    	    html:      true,
                     placement: 'auto',
                     animation: false,
                     trigger:   'click',
 		    template:  '<div class="popover shadow" role="tooltip">' +
                                '<div class="arrow"></div>' +
-		               '<h3  class="popover-header"></h3>' +
+		               '<h3  class="popover-header d-flex"></h3>' +
 		               '<div class="popover-body"></div>' +
 		               '</div>',
 		    container: 'body',
-		    content: function() {
-		        var index = $(this).attr("data-popover-content");
+		    content: function(obj) {
+                        var index    = $(obj).attr('data-popover-content') ;
                         var hexvalue = get_value(simhw_sim_states().BR[index]);
                         return hex2values(hexvalue, index) ;
 		    },
-		    title: function() {
-		        var index = $(this).attr("data-popover-content");
+		    title: function(obj) {
+                        var index     = $(obj).attr('data-popover-content') ;
                         var id_button = "&quot;#rf" + index + "&quot;" ;
-		        return '<span class="text-dark"><strong>R' + index + '</strong></span>' +
-                               '<button type="button" id="close" class="close" ' +
-                               '        onclick="$(' + id_button + ').click();">&times;</button>';
+
+	                var disp_name = get_cfg('RF_display_name') ;
+                        var SIMWARE   = get_simware() ;
+		        var rname = wepsim_refresh_rf_names_mkname(disp_name, SIMWARE, index, 0) ;
+
+		        return '<span class="text-body font-monospace col"><strong>' + rname + '</strong></span>' +
+                               '<button type="button" id="close" ' +
+                               '        class="btn-close border border-secondary ms-auto" ' +
+                               '        onclick="$(' + id_button + ').click();"></button>';
 		    },
 		    sanitizeFn: function (content) {
                         return content ; // DOMPurify.sanitize(content) ;
                     }
-	    }) ;
+	    } ;
+            wepsim_popovers_init("[data-bs-toggle=popover-up]", popover_cfg, null) ;
 
 	    // vue binding
 	    var f_computed_value = function(value) {
@@ -392,19 +414,20 @@
                     part2 = showkey.substring(3, showkey.length) ;
 
 		    if (showkey.length < 3)
-                         showkey = '<span class="text-monospace">' + part1 + '&nbsp;</span>' ;
-		    else showkey = '<span class="text-monospace">' + part1 + '</span>' ;
+                         showkey = '<span class="font-monospace">' + part1 + '&nbsp;</span>' ;
+		    else showkey = '<span class="font-monospace">' + part1 + '</span>' ;
 
 		    if (part2.length > 0)
-                        showkey += '<span class="d-none d-sm-inline-flex text-monospace">' + part2 + '</span>' ;
+                        showkey += '<span class="d-none d-sm-inline-flex font-monospace">' + part2 + '</span>' ;
 	        }
 
-                o1 += "<button type='button' class='btn py-0 px-1 mt-1 " + divclass + "' " +
-		      "        style='border-color:#cecece; background-color:#f5f5f5' data-role='none' " +
-                      "        data-toggle='popover-bottom' data-popover-content='" + s + "' data-container='body' " +
+                o1 += "<button type='button' " +
+                      "        class='btn py-0 px-1 mt-1 ms-1 " + divclass + " border border-secondary bg-body-tertiary' " +
+		      "        style='' data-role='none' " +
+                      "        data-bs-toggle='popover-bottom' data-popover-content='" + s + "' data-container='body' " +
                       "        id='rp" + s + "'>" +
                       showkey +
-                      " <span class='badge badge-secondary text-dark' style='background-color:#CEECF5;' id='tbl_"  + s + "'>" +
+                      " <span class='badge badge-secondary bg-info-subtle text-body' style='' id='tbl_"  + s + "'>" +
 		      "<div id='rf_" + s + "'>{{ computed_value }}</div>" +
                       "</span>" +
                       "</button>" ;
@@ -413,26 +436,35 @@
             $("#states_ALL").html("<div class='d-flex flex-row flex-wrap justify-content-around justify-content-sm-between'>" + o1 + "</div>");
 
             // Pop-overs
-	    $("[data-toggle=popover-bottom]").popover({
+	    var popover_cfg = {
 	    	    html:      true,
                     placement: 'bottom',
                     animation: false,
-		    content: function() {
-		        var index = $(this).attr("data-popover-content");
+		    template:  '<div class="popover shadow" role="tooltip">' +
+                               '<div class="arrow"></div>' +
+		               '<h3  class="popover-header d-flex"></h3>' +
+		               '<div class="popover-body"></div>' +
+		               '</div>',
+		    content: function(obj) {
+                        var index    = $(obj).attr('data-popover-content') ;
                         var hexvalue = get_value(simhw_sim_states()[index]);
                         return hex2values(hexvalue, index) ;
 		    },
-		    title: function() {
-		        var index = $(this).attr("data-popover-content");
+		    title: function(obj) {
+                        var index     = $(obj).attr('data-popover-content') ;
                         var id_button = "&quot;#rp" + index + "&quot;" ;
-		        return '<span class="text-dark"><strong>' + simhw_sim_states()[index].name + '</strong></span>' +
-                               '<button type="button" id="close" class="close" ' +
-                               '        onclick="$(' + id_button + ').click();">&times;</button>';
+		        return '<span class="text-body col"><strong>' +
+                               simhw_sim_states()[index].name +
+                               '</strong></span>' +
+                               '<button type="button" id="close" ' +
+                               '        class="btn-close border border-secondary ms-auto" ' +
+                               '        onclick="$(' + id_button + ').click();"></button>';
 		    },
 		    sanitizeFn: function (content) {
                         return content ; // DOMPurify.sanitize(content) ;
                     }
-	    });
+	    } ;
+            wepsim_popovers_init("[data-bs-toggle=popover-bottom]", popover_cfg, null) ;
 
 	    // vue binding
 	    var f_computed_value = function(value) {

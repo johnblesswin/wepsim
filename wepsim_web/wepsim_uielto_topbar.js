@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -24,7 +24,7 @@
          */
 
         /* jshint esversion: 6 */
-        class ws_topbar extends HTMLElement
+        class ws_topbar extends ws_uielto
         {
 	      constructor ()
 	      {
@@ -32,45 +32,38 @@
 		    super();
 	      }
 
-	      render ( msg_default )
+	      render ( event_name )
 	      {
 		    // html holder
-		    var o1 =    '<nav class="navbar navbar-expand-lg fixed-top p-0" style="background-color: #EAEAEA">' +
-				'    <span class="navbar-brand mr-auto">' +
-				'       <a class="ui-title pl-2 mx-2 text-primary" style="text-decoration: none"' +
+		    var o1 =    '<nav class="navbar navbar-expand-lg fixed-top p-0 bg-body-secondary">' +
+				'    <span class="navbar-brand me-auto">' +
+				'       <a class="ui-title ps-2 mx-2 text-primary" ' +
+                                '          style="text-decoration: none"' +
 				'          id="po1"' +
-				'	  data-container="body"' +
-				'          onclick="if (typeof wsweb_quickmenu_toggle === \'function\')' +
-				'	               wsweb_quickmenu_toggle();' +
-				'	           return false;"' +
-				'	  data-html="true"' +
-				'	  data-placement="bottom">WepSIM&nbsp;<span class="badge badge-pill badge-secondary"><div class="wsversion">loading ...</div></span>' +
+				'	   data-container="body"' +
+	// bs5 toggle fails	'          onclick="if (typeof wsweb_quickmenu_toggle === \'function\')' +
+	// bs5 toggle fails	'	               wsweb_quickmenu_toggle();' +
+				'          onclick="if (typeof wsweb_quickmenu_show === \'function\')' +
+				'	                wsweb_quickmenu_show();' +
+				'	            return false;"' +
+				'	  data-bs-html="true"' +
+				'	  data-bs-placement="bottom">WepSIM&nbsp;<span class="badge rounded-pill text-bg-secondary"><div class="wsversion">loading ...</div></span>' +
 				'       </a>' +
 				'    </span>' +
 				'' +
-				'    <button class="navbar-toggler ml-auto btn-outline-secondary" data-toggle="collapse"' +
-				'            data-target="#navbarSupportedContent"' +
-				'            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">' +
-				'	<em class="fas fa-bars"></em>' +
-				'    </button>' +
-				'' +
-				'    <div id="navbarSupportedContent" class="collapse navbar-collapse mx-auto py-0 flex-row" style="background-color: #EAEAEA">' +
-				'       <div class="navbar-nav nav-pills ml-auto col-md-8">' +
-				'       <ul class="nav nav-pills ml-auto">' +
-				'          <li class="nav-item ml-auto"><img alt="ARCOS logo" src="images/arcos.svg" style="height:30pt" class="img-fluid rounded m-0 p-1" /></li>' +
-				'          <li class="nav-item ml-auto"><strong>.</strong></li>' +
-				'          <li class="nav-item ml-auto"><img alt="Computer Science and Engineering Departament logo" src="images/dptoinf.png" style="height:28pt" class="img-fluid rounded m-0 p-0" /></li>' +
-				'       </ul>' +
-				'       </div>' +
-				'    </div>' +
+				'    <span class="navbar-brand ms-auto">' +
+				'       <a class="ui-title ps-2 mx-2 text-primary" ' +
+                                '          style="text-decoration: none"' +
+				'          id="po1"' +
+				'	   data-container="body"' +
+				'          onclick="wsweb_dialog_open(\'about\');' +
+				'	            return true;"' +
+				'	  data-bs-html="true"' +
+				'	  data-bs-placement="bottom"><span data-langkey="About">About</span>...</a>' +
+				'    </span>' +
 				'</nav>' ;
 
 		    this.innerHTML = o1 ;
-	      }
-
-	      connectedCallback ()
-	      {
-		    this.render('') ;
 	      }
         }
 
@@ -82,7 +75,7 @@
         // quick menu
         function topbar_quickmenu_action ( action )
         {
-    	    $('#po1').popover(action) ;
+            wepsim_popover_action('po1', action) ;
 
             // set UI config (if shown)
             if (action != 'hide')

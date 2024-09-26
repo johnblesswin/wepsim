@@ -1,5 +1,5 @@
-/*    
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+/*
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -34,7 +34,7 @@
 	      }
 
               // render
-	      render ( )
+	      render ( event_name )
 	      {
                     // initialize render elements...
 	            super.render() ;
@@ -52,7 +52,7 @@
 		    o1 += '<div class="card border-secondary h-100">' +
 			  '<div class="card-header border-secondary text-white bg-secondary p-1 text-center">' +
 			  '<h5 class="py-1 m-0">' +
-			  '<em class="fas fa-microchip pr-2"></em>' +
+			  '<em class="fas fa-microchip pe-2"></em>' +
                           '<span data-langkey="Processor">Processor</span>' +
                           '</h5>' +
 			  '</div>' +
@@ -84,7 +84,7 @@
 			       '    onclick="wepsim_reload_hw(\'' + e_hw + '\') ;' +
 			       '	     wepsim_notify_success(\'<strong>INFO</strong>\', ' +
 			       '			          \'' + e_hw +' processor loaded!.\') ;'+
-			       '	     return false;">' + 
+			       '	     return false;">' +
 			       '<span data-langkey="' + ename + '">' + ename + '</span>' +
 			       '</button>' ;
 		    }

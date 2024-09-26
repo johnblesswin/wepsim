@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -35,21 +35,20 @@
 		'Matrix':		'Matris',
 		'Memory access':		'Minnesåtkomst',
 		'SC 1, 4-5, 8, 11-12':		'SC 1, 4-5, 8, 11-12',
-		'strlen_2 + skipasciicode_2':		'strlen_2 + skipasciicode_2',
 		'Subrutine':		'subrutin',
 		'syscall 1, 4-5, 8, 11-12':		'syscall 1, 4-5, 8, 11-12',
 		'System call':		'Systemanrop',
 		'Threads':		'Trådar',
 		'Vector':		'Vektor',
 		'Compiler Explorer':		'Compiler Explorer',
+		'Instructive':		        '<b>Instruktivt</b>',
 		'example_04_01':		'Avancerat exempel med avbrott, systemanrop och undantag.',
 		'example_05_01':		'Applikationsspecifik förlängning: addv + seqv.',
 		'example_05_03':		'Applikationsspecifik förlängning: madd + mmul + mxch.',
-		'example_05_02':		'Applikationsspecifik förlängning: strlen_2 + skipasciicode_2.',
-		'example_03_01':		'<b>Instruktivt</b> exempel med undantag för flytpunkten.',
-		'example_03_02':		'<b>Instruktivt</b> exempel med avbrottstöd: hämta, RETI och .ktext / .kdata.',
-		'example_03_03':		'<b>Instruktivt</b> exempel med systemsamtalstöd.',
-	        'example_03_04':		'<b>Instruktivt</b> exempel med enkel stackkonvention.',
+		'example_03_01':		'Exempel med undantag för flytpunkten.',
+		'example_03_02':		'Exempel med avbrottstöd: hämta, RETI och .ktext / .kdata.',
+		'example_03_03':		'Exempel med systemsamtalstöd.',
+	        'example_03_04':		'Exempel med enkel stackkonvention.',
 		'example_04_04':		'Exempel på malloc + fri.',
 		'example_04_02':		'Exempel på syscall för att skriva / läsa heltal och sträng.',
 		'example_04_03':		'Exempel på trådar.',
@@ -71,6 +70,7 @@
 		'Intermediate':			'Mellanliggande',
 		'Laboratory':			'Laboratorium',
 		'Operating Systems':		'Operativsystem',
+		'Extra':			'Bonusar',
 		'Special':			'Särskild',
 
 		'Load example':			'Ladda exempel',

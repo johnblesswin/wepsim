@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -30,28 +30,51 @@
 		         "simulator": function() {
 					  sim_change_workspace('#main1', 0) ;
 
-					  setTimeout(function(){
-							 $("#t3_firm").appendTo("#t3_firm_placeholder2") ;
-							  $("#t4_asm").appendTo("#t4_asm_placeholder2") ;
-							 inputfirm.refresh() ;
-							 inputasm.refresh() ;
-						     }, 50) ;
+			                  var actual_details = $('#select5b').text() ;
+			                  if (actual_details.includes('MicroCode')) {
+                                              jQuery("#t3_firm").detach().appendTo("#t3_firm_placeholder2");
+					      setTimeout(function() {
+							    inputfirm.refresh();
+						         }, 50) ;
+					  }
+			             else if (actual_details.includes('Assembly')) {
+                                              jQuery("#t4_asm").detach().appendTo("#t4_asm_placeholder2");
+					      setTimeout(function() {
+							    inputasm.refresh() ;
+						         }, 50) ;
+					  }
 	                              },
 		         "microcode": function() {
 		                          sim_change_workspace('#main3', 1) ;
 
-			                  setTimeout(function(){
-					                 $("#t3_firm").appendTo("#t3_firm_placeholder1") ;
-					                 inputfirm.refresh() ;
-				                     }, 50) ;
+					  var t3_firm = document.getElementById("t3_firm");
+					  var ct3firm = document.getElementById("t3_firm_placeholder1");
+					  if (![...ct3firm.children].includes(t3_firm)) {
+                                              jQuery("#t3_firm").detach().appendTo('#t3_firm_placeholder1');
+                                          }
+
+					  if (inputfirm.is_refreshed != true) {
+					      inputfirm.is_refreshed = true ;
+			                      setTimeout(function(){
+					                    inputfirm.refresh() ;
+				                         }, 50) ;
+                                          }
 	                              },
 		         "assembly":  function() {
 					  sim_change_workspace('#main4', 2) ;
 
-					  setTimeout(function(){
-							 $("#t4_asm").appendTo("#t4_asm_placeholder1") ;
-							 inputasm.refresh() ;
-						     }, 50) ;
+					  var t4_asm = document.getElementById("t4_asm");
+					  var ct4asm = document.getElementById("t4_asm_placeholder1");
+					  if (![...ct4asm.children].includes(t4_asm)) {
+                                              jQuery("#t4_asm").detach().appendTo("#t4_asm_placeholder1") ;
+                                          }
+
+					  if (inputasm.is_refreshed != true) {
+					      inputasm.is_refreshed = true ;
+					      setTimeout(function(){
+							    inputasm.refresh() ;
+					    	         }, 50) ;
+					  }
 	                              }
 		       },
 	    "compact": {
@@ -77,7 +100,7 @@
 
 	    // stats about ui
 	    setTimeout(function(){
-		           ga('send', 'event', 'ui', 'ui.workspace', 'ui.workspace.simulator');
+		           simcore_ga('ui', 'ui.workspace', 'ui.workspace.simulator') ;
 		       }, 50) ;
 
             // add if recording
@@ -98,7 +121,7 @@
 
 	    // stats about ui
 	    setTimeout(function(){
-			   ga('send', 'event', 'ui', 'ui.workspace', 'ui.workspace.microcode');
+			   simcore_ga('ui', 'ui.workspace', 'ui.workspace.microcode') ;
 		       }, 50) ;
 
             // add if recording
@@ -119,7 +142,7 @@
 
 	    // stats about ui
 	    setTimeout(function(){
-			   ga('send', 'event', 'ui', 'ui.workspace', 'ui.workspace.assembly');
+			   simcore_ga('ui', 'ui.workspace', 'ui.workspace.assembly') ;
 		       }, 50) ;
 
             // add if recording
@@ -132,26 +155,10 @@
 
     function wsweb_change_show_processor ( )
     {
-            var id_arr = [ 'svg_p', 'svg_cu', 'svg_p2' ] ;
-            var o = null ;
-            var a = null ;
-
 	    $("#tab26").tab('show') ;
-            if (simhw_active() !== null)
-            {
-                // reload svg (just in case)
-                for (var i in id_arr)
-                {
-                         o = document.getElementById(id_arr[i]) ;
-                     if (o === null) continue ;
-                     a = o.getAttribute('data') ;
-                         o.setAttribute('data', a) ;
-                }
 
-                // start drawing again
-	        wepsim_svg_start_drawing() ;
-	        refresh() ;
-            }
+            wepsim_svg_start_drawing() ;
+            cpucu_show_graph() ;
 
             // add if recording
             simcore_record_append_new('Show processor details',
@@ -164,7 +171,9 @@
     function wsweb_change_show_asmdbg ( )
     {
 	    $("#tab24").tab('show') ;
-            if (simhw_active() !== null)
+
+            var ahw = simhw_active() ;
+            if (ahw !== null)
             {
                 wepsim_svg_stop_drawing() ;
 
@@ -179,8 +188,12 @@
                     return true ;
                 }
 
-                if ( (typeof o1 !== 'undefined') && (typeof o1[0] !== 'undefined') ) {
-	              obj_byid[0].scrollTop = o1[0].offsetTop ;
+                if ( (typeof o1 !== 'undefined') && (typeof o1[0] !== 'undefined') )
+                {
+	              var off1 = o1[0].offsetTop ;
+	              if (off1 > 10)
+                          off1 = off1 - 10 ;
+	              obj_byid[0].scrollTop = off1 ;
                 }
             }
 
@@ -244,9 +257,12 @@
 
     function wsweb_execution_run ( )
     {
-            if (simhw_active() !== null)
-            {
-                var mode = get_cfg('ws_mode') ;
+            if (false == inputfirm.is_compiled) {
+		wsweb_dlg_alert('The Microcode is not microcompiled.<br>\n');
+                return false ;
+            }
+
+            if (simhw_active() !== null) {
 	        webui_executionbar_toggle_play('exebar1') ;
             }
 
@@ -288,7 +304,7 @@
 		                      'wsweb_dialog_open("' + dialog_id + '");\n') ;
 
 	    // stats about ui
-            ga('send', 'event', 'ui', 'ui.dialog', 'ui.dialog.' + wsweb_dialogs[dialog_id].id) ;
+            simcore_ga('ui', 'ui.dialog', 'ui.dialog.' + wsweb_dialogs[dialog_id].id) ;
 
 	    // return dialog
 	    return d1 ;
@@ -401,24 +417,47 @@
     var hash_detail2action = {
 	    "CLOCK":          function(){ wepsim_execute_microinstruction(); },
 	    "REGISTER_FILE":  function(){ wsweb_set_details_select(11); },
+
 	    "CONTROL_MEMORY": function(){ wsweb_set_details_select(16); show_memories_values(); },
 	    "CPU_STATS":      function(){ wsweb_set_details_select(17); show_memories_values(); },
 	    "MEMORY":         function(){ wsweb_set_details_select(14); show_memories_values(); },
 	    "MEMORY_CONFIG":  function(){ wsweb_set_details_select(18); show_memories_values(); },
+	    "CACHE":          function(){ wsweb_set_details_select(28); show_memories_values(); },
+	    "CACHE_CONFIG":   function(){ wsweb_set_details_select(29); show_memories_values(); },
 	    "KEYBOARD":       function(){ wsweb_set_details_select(12); show_memories_values(); },
 	    "SCREEN":         function(){ wsweb_set_details_select(12); show_memories_values(); },
 	    "IO_STATS":       function(){ wsweb_set_details_select(15); show_memories_values(); },
 	    "IO_CONFIG":      function(){ wsweb_set_details_select(19); show_memories_values(); },
 	    "3DLED":          function(){ wsweb_set_details_select(25); show_memories_values(); },
+	    "LEDMATRIX":      function(){ wsweb_set_details_select(27); show_memories_values(); },
 
-	    "FRM_EDITOR":     function(){ wsweb_set_details_select(20); $("#t3_firm").appendTo("#t3_firm_placeholder2"); inputfirm.refresh(); },
-	    "ASM_EDITOR":     function(){ wsweb_set_details_select(21);  $("#t4_asm").appendTo("#t4_asm_placeholder2");   inputasm.refresh(); },
+
+	    "FRM_EDITOR":     function(){ wsweb_set_details_select(20);
+					  var t3_firm = document.getElementById("t3_firm");
+					  var ct3firm = document.getElementById("t3_firm_placeholder2");
+					  if (![...ct3firm.children].includes(t3_firm)) {
+                                              jQuery("#t3_firm").detach().appendTo('#t3_firm_placeholder2');
+                                          }
+					  setTimeout(function() {
+                                                        inputfirm.refresh();
+						     }, 50) ;
+                                        },
+	    "ASM_EDITOR":     function(){ wsweb_set_details_select(21);
+					  var t4_asm = document.getElementById("t4_asm");
+					  var ct4asm = document.getElementById("t4_asm_placeholder2");
+					  if (![...ct4asm.children].includes(t4_asm)) {
+                                              jQuery("#t4_asm").detach().appendTo("#t4_asm_placeholder2") ;
+                                          }
+					  setTimeout(function() {
+							inputasm.refresh() ;
+						     }, 50) ;
+                                        },
+
 	    "HARDWARE":       function(){ wsweb_set_details_select(22);
-					  $('[data-toggle=tooltip]').tooltip('hide');
-        			          simcoreui_init_hw("#config_HW") ;
-	                                  simcoreui_show_hw() ;
+                                          wepsim_tooltips_hide('[data-bs-toggle=tooltip]');
+	                                  simcoreui_show_hw();
 					  var ws_idiom = get_cfg('ws_idiom');
-					  i18n_update_tags('gui', ws_idiom) ;
+					  i18n_update_tags('gui', ws_idiom);
                                         }
         } ;
 
@@ -444,7 +483,7 @@
     {
             if (simhw_active() !== null)
             {
-		$('[data-toggle=tooltip]').tooltip('hide') ;
+                wepsim_tooltips_hide('[data-bs-toggle=tooltip]');
 		show_memories_values() ;
                 scroll_memory_to_lastaddress() ;
 		wepsim_reset_max_turbo() ;
@@ -518,12 +557,17 @@
 		      break ;
 
 	        case 'intro':
-                      wepsim_newbie_tour() ;
+                      wepsim_newbie_tour('tour1') ;
 		      break ;
 
 	        case 'hw_summary':
 		      wsweb_dialog_open('help') ;
-		      wepsim_open_help_hardware_summary() ;
+                      wepsim_help_set('code', 'hardware_summary') ;
+		      break ;
+
+	        case 'sw_summary':
+		      wsweb_dialog_open('help') ;
+                      wepsim_help_set('code', 'assembly_summary') ;
 		      break ;
 	    }
 
@@ -669,7 +713,7 @@
 	    simcore_record_start() ;
 
 	    // stats about recordbar
-	    ga('send', 'event', 'recordbar', 'recordbar.action', 'recordbar.action.record');
+	    simcore_ga('recordbar', 'recordbar.action', 'recordbar.action.record') ;
 
             // return ok
             return true ;
@@ -680,7 +724,7 @@
 	    simcore_record_stop() ;
 
 	    // stats about recordbar
-	    ga('send', 'event', 'recordbar', 'recordbar.action', 'recordbar.action.stop');
+	    simcore_ga('recordbar', 'recordbar.action', 'recordbar.action.stop') ;
 
             // return ok
             return true ;
@@ -691,7 +735,7 @@
 	    simcore_record_reset() ;
 
 	    // stats about recordbar
-	    ga('send', 'event', 'recordbar', 'recordbar.action', 'recordbar.action.reset');
+	    simcore_ga('recordbar', 'recordbar.action', 'recordbar.action.reset') ;
 
             // return ok
             return true ;
@@ -702,7 +746,7 @@
 	    simcore_record_play() ;
 
 	    // stats about recordbar
-	    ga('send', 'event', 'recordbar', 'recordbar.action', 'recordbar.action.play');
+	    simcore_ga('recordbar', 'recordbar.action', 'recordbar.action.play') ;
 
             // return ok
             return true ;
@@ -713,7 +757,7 @@
 	    simcore_record_pause() ;
 
 	    // stats about recordbar
-	    ga('send', 'event', 'recordbar', 'recordbar.action', 'recordbar.action.pause');
+	    simcore_ga('recordbar', 'recordbar.action', 'recordbar.action.pause') ;
 
             // return ok
             return true ;
@@ -724,7 +768,7 @@
 	    simcore_record_playInterval(from, to) ;
 
 	    // stats about recordbar
-	    ga('send', 'event', 'recordbar', 'recordbar.action', 'recordbar.action.play-' + from + '-' + to);
+	    simcore_ga('recordbar', 'recordbar.action', 'recordbar.action.play-' + from + '-' + to) ;
 
             // return ok
             return true ;
@@ -784,7 +828,7 @@
     // quick slider(s)
     function wsweb_quickslider_show ( )
     {
-	    $('#popover-slidercfg').popover('show') ;
+            wepsim_popover_show('popover-slidercfg') ;
 
             // add if recording
             simcore_record_append_new('Open the "quick slider"',
@@ -796,7 +840,7 @@
 
     function wsweb_quickslider_close ( )
     {
-	    $('#popover-slidercfg').popover('hide') ;
+            wepsim_popover_hide('popover-slidercfg') ;
 
             // add if recording
             simcore_record_append_new('Close the "quick slider"',
@@ -808,11 +852,111 @@
 
     function wsweb_quickslider_toggle ( )
     {
-	    $('#popover-slidercfg').popover('toggle') ;
+            wepsim_popover_action('popover-slidercfg', 'toggle') ;
 
             // add if recording
             simcore_record_append_new('Toggle the "quick slider"',
 		                      'wsweb_quickslider_toggle();\n') ;
+
+            // return ok
+            return true ;
+    }
+
+    // quick cpucu
+    function wsweb_quickcpuview_show ( )
+    {
+            wepsim_popover_show('popover-cpuview') ;
+
+            // add if recording
+            simcore_record_append_new('Open the "quick cpuview"',
+		                      'wsweb_quickcpuview_show();\n') ;
+
+            // return ok
+            return true ;
+    }
+
+    function wsweb_quickcpuview_close ( )
+    {
+            wepsim_popover_hide('popover-cpuview') ;
+
+            // add if recording
+            simcore_record_append_new('Close the "quick cpuview"',
+		                      'wsweb_quickcpuview_close();\n') ;
+
+            // return ok
+            return true ;
+    }
+
+    function wsweb_quickcpuview_toggle ( )
+    {
+            wepsim_popover_action('popover-cpuview', 'toggle') ;
+
+            // add if recording
+            simcore_record_append_new('Toggle the "quick cpuview"',
+		                      'wsweb_quickcpuview_toggle();\n') ;
+
+            // return ok
+            return true ;
+    }
+
+    function wsweb_cpuview_as_graph ( )
+    {
+            update_cfg("CPUCU_show_graph", true) ;
+            show_cpuview_view() ;
+
+            // add if recording
+            simcore_record_append_new('Toggle to "view as graphic"',
+		                      'wsweb_cpuview_as_graph();\n') ;
+
+            // return ok
+            return true ;
+    }
+
+    function wsweb_cpuview_as_text ( )
+    {
+            update_cfg("CPUCU_show_graph", false) ;
+            show_cpuview_view() ;
+
+            // add if recording
+            simcore_record_append_new('Toggle to "view as text"',
+		                      'wsweb_cpuview_as_text();\n') ;
+
+            // return ok
+            return true ;
+    }
+
+    // quick rfcfg
+    function wsweb_quickrf_show ( )
+    {
+            wepsim_popover_show('popover-rfcfg') ;
+
+            // add if recording
+            simcore_record_append_new('Open the "quick rfcfg"',
+		                      'wsweb_quickrf_show();\n') ;
+
+            // return ok
+            return true ;
+    }
+
+    function wsweb_quickrf_close ( )
+    {
+            wepsim_popover_hide('popover-rfcfg') ;
+
+            // add if recording
+            simcore_record_append_new('Close the "quick rfcfg"',
+		                      'wsweb_quickrf_close();\n') ;
+
+            // return ok
+            return true ;
+    }
+
+    function wsweb_quickrf_toggle ( )
+    {
+            wepsim_popover_action('popover-rfcfg', 'toggle') ;
+
+            // add if recording
+            simcore_record_append_new('Toggle the "quick rfcfg"',
+		                      'wsweb_quickrf_toggle();\n') ;
 
             // return ok
             return true ;
@@ -845,7 +989,7 @@
 
     function wsweb_recordbar_close ( )
     {
-	    $('#record_div').collapse('hide') ;
+	    $('#record_div').hide() ;
 
             // add if recording
             simcore_record_append_new('Close the "record toolbar"',
@@ -908,7 +1052,7 @@
 		             buttons:    {
 					    noclose: {
 					        label: "<div id='autoclose1'>&nbsp;</div>",
-					        className: 'float-left mr-auto m-0',
+					        className: 'float-start me-auto m-0',
 					        callback: function() {
 					   		     return false;
 						          }
@@ -946,7 +1090,7 @@
 	    }
 
 	    // stats about recordbar
-	    ga('send', 'event', 'recordbar', 'recordbar.action', 'recordbar.action.add_notification');
+	    simcore_ga('recordbar', 'recordbar.action', 'recordbar.action.add_notification') ;
 
 	    // build the message box
             var wsi = get_cfg('ws_idiom') ;
@@ -954,12 +1098,14 @@
 
             bbbt.cancel = {
 		    label: i18n_get('gui',wsi,'Close'),
-		    className: 'btn-danger col float-left mr-auto',
+		    className: 'btn-danger col float-start me-auto',
 	    };
             bbbt.end = {
 		    label: i18n_get('gui',wsi,'Save'),
-		    className: 'btn-success col float-right',
+		    className: 'btn-success col float-end',
 		    callback: function() {
+                            /* eslint-disable no-control-regex */
+
 			    // get values
 			    var nf_title    = $("#frm_title1").val() ;
 			    var nf_message  = $("#frm_message1").val() ;
@@ -985,19 +1131,21 @@
 			    simcore_record_setTimeBeforeNow(w_duration) ;
 			    simcore_record_append_new('Close message with title "' + s_title + '".',
 				                      'wsweb_notifyuser_hide();\n') ;
+
+                            /* eslint-enable no-control-regex */
 		    }
 	    };
 
 	    var bbmsg = '<div class="container">' +
 		        '<label for="frm_title1"><em>'    + i18n_get('dialogs',wsi,'Title') + ':</em></label>' +
 			'<p><input aria-label="title" id="frm_title1" ' +
-			'	  class="form-control btn-outline-dark" placeholder="Title for the notification" style="min-width: 90%;"/></p>' +
+			'	  class="form-control btn-outline-secondary" placeholder="Title for the notification" style="min-width: 90%;"/></p>' +
 		        '<label for="frm_message1"><em>'  + i18n_get('dialogs',wsi,'Message') + ':</em></label>' +
 			'<p><textarea aria-label="message" id="frm_message1" rows="5" ' +
-			'	      class="form-control btn-outline-dark" placeholder="Message for the notification" style="min-width: 90%;"/></textarea></p>' +
+			'	      class="form-control btn-outline-secondary" placeholder="Message for the notification" style="min-width: 90%;"/></textarea></p>' +
 		        '<label for="frm_duration1"><em>' + i18n_get('dialogs',wsi,'Duration') + ':</em></label>' +
 			'<p><input aria-label="duration" id="frm_duration1" type="number" ' +
-			'	  class="form-control btn-outline-dark" placeholder="Duration for the notification in seconds" style="min-width: 90%;"/></p>' +
+			'	  class="form-control btn-outline-secondary" placeholder="Duration for the notification in seconds" style="min-width: 90%;"/></p>' +
 		        '</div>' ;
 
             // dialog

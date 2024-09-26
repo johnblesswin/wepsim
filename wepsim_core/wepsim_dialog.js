@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -48,6 +48,9 @@
 				       var ws_idiom = get_cfg('ws_idiom') ;
 				       i18n_update_tags('dialogs', ws_idiom) ;
 				       i18n_update_tags('gui',     ws_idiom) ;
+
+				       // auto-close tooltips
+                                       setTimeout(wepsim_tooltips_closeAll, 500) ;
 				    },
 		    buttons:        dialog_obj.buttons
 	    } ;
@@ -65,7 +68,11 @@
 		    });
 
             // show
-	    d1.find('.modal-title').addClass("ml-auto") ;
+	    d1.find('.modal-header').addClass("bg-body-secondary") ;
+	    d1.find('.modal-footer').addClass("bg-body-secondary") ;
+	    d1.find('.modal-title').addClass("mx-auto") ;
+	    d1.find('.bootbox-close-button').addClass("mx-1 btn-close border-0") ;
+
 	    d1.modal('handleUpdate') ;
 	    d1.modal('show');
 
@@ -101,7 +108,7 @@
 			    animate:        false,
 			    buttons:        {
 						cancel: {
-						   label:     '<i class="fa fa-times mr-2"></i>' +
+						   label:     '<i class="fa fa-times me-2"></i>' +
                                                               '<span data-langkey="Close">Close</span>',
                                                    className: 'btn btn-primary btn-sm ' +
                                                               'col col-sm-3 float-right shadow-none'
@@ -114,6 +121,8 @@
 	    var d1 = bootbox.dialog(a_obj) ;
 
             // show
+	    d1.find('.modal-header').addClass("bg-body-secondary") ;
+	    d1.find('.modal-footer').addClass("bg-body-secondary") ;
 	    d1.find('.modal-title').addClass("ml-auto") ;
 	    d1.modal('handleUpdate') ;
             d1.modal('show') ;

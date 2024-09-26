@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -24,12 +24,12 @@
      */
 
     var hash_action = {} ;
- 
+
 
     //
     // CHECK
     //
- 
+
     hash_action.CHECK = function(data, options)
     {
         // set verbosity handlers
@@ -48,17 +48,17 @@
         console.log(ret.msg);
         return ret.ok ;
     } ;
- 
+
     //
     // RUN
     //
- 
+
     hash_action.RUN = function(data, options)
     {
         // set verbosity handlers
         options.before_instruction = simcore_do_nothing_handler ;
         options.after_instruction  = simcore_do_nothing_handler ;
- 
+
         // run...
         var ret = wepsim_nodejs_runApp(data, options) ;
 	if (ret.ok === false) {
@@ -71,16 +71,16 @@
         console.log(ret.msg);
         return true ;
     } ;
- 
+
     //
     // STEPBYSTEP
     //
- 
+
     hash_action.STEPBYSTEP = function(data, options)
     {
         // set verbosity handlers
         wepsim_nodejs_verbose_instructionlevel(options) ;
- 
+
         // run...
         var ret = wepsim_nodejs_runApp(data, options) ;
 	if (ret.ok === false) {
@@ -89,16 +89,16 @@
 
         return ret.ok ;
     } ;
- 
+
     //
     // MICROSTEPBYMICROSTEP
     //
- 
+
     hash_action.MICROSTEPBYMICROSTEP = function(data, options)
     {
         // set verbosity handlers
         wepsim_nodejs_verbose_microinstructionlevel(options) ;
- 
+
         // run...
         var ret = wepsim_nodejs_runApp(data, options) ;
 	if (ret.ok === false) {
@@ -107,16 +107,16 @@
 
         return ret.ok ;
     } ;
- 
+
     //
     // MICROSTEPVERBALIZED
     //
- 
+
     hash_action.MICROSTEPVERBALIZED = function(data, options)
     {
         // set verbosity handlers
         wepsim_nodejs_verbose_verbalized(options) ;
- 
+
         // run...
         var ret = wepsim_nodejs_runApp(data, options) ;
 	if (ret.ok === false) {
@@ -125,11 +125,11 @@
 
         return ret.ok ;
     } ;
- 
+
     //
     // INTERACTIVE
     //
- 
+
     hash_action.INTERACTIVE = function(data, options)
     {
         console.log('\n' +
@@ -138,7 +138,7 @@
                     '\n' +
                     'Interactive mode enabled.\n' +
                     '') ;
- 
+
         // run...
         var ret = wepsim_nodejs_runAppInteractive(data, options) ;
 	if (ret.ok === false) {
@@ -146,23 +146,23 @@
             return false ;
 	}
     } ;
- 
+
     //
     // EXPORT-HARDWARE
     //
- 
+
     hash_action["EXPORT-HARDWARE"] = function(data, options)
     {
         var ret = simcore_hardware_export(data.mode) ;
- 
+
         console.log(ret.msg);
         return ret.ok ;
     } ;
- 
+
     //
     // SHOW-RECORD
     //
- 
+
     hash_action["SHOW-RECORD"] = function(data, options)
     {
         var ret = wepsim_nodejs_show_record(data.record) ;
@@ -170,41 +170,68 @@
         console.log(ret) ;
         return true ;
     } ;
- 
+
     //
     // SHOW-MICROCODE
     //
- 
+
     hash_action["SHOW-MICROCODE"] = function(data, options)
     {
         console.log(data.firmware) ;
         return true ;
     } ;
- 
+
     //
     // SHOW-ASSEMBLY
     //
- 
+
     hash_action["SHOW-ASSEMBLY"] = function(data, options)
     {
         console.log(data.assembly) ;
         return true ;
     } ;
- 
+
+    hash_action["SHOW-BINARY"] = function(data, options)
+    {
+        // 1) initialize
+        var ret = wepsim_nodejs_init(data) ;
+	if (false === ret.ok) {
+            console.log(ret.msg);
+	    return false ;
+	}
+
+	// 2) prepare firmware-assembly
+        ret = wepsim_nodejs_prepareCode(data, options) ;
+	if (false === ret.ok) {
+            console.log(ret.msg);
+	    return false ;
+	}
+
+	// 3) transform into binary assembly
+        ret = wepsim_nodejs_get_asmbin(data, options) ;
+	if (false === ret.ok) {
+            console.log(ret.msg);
+	    return false ;
+	}
+
+        console.log(ret.simware.src_alt) ;
+        return true ;
+    } ;
+
     //
     // SHOW-MODE
     //
- 
+
     hash_action["SHOW-MODE"] = function(data, options)
     {
         console.log(data.mode) ;
         return true ;
     } ;
- 
+
     //
     // SHOW-CONSOLE
     //
- 
+
     hash_action["SHOW-CONSOLE"] = function(data, options)
     {
         // run...
@@ -219,29 +246,96 @@
         console.log(ret.msg);
         return true ;
     } ;
- 
+
+    //
+    // SHOW-MICROCODE-FIELDS
+    //
+
+    hash_action["SHOW-MICROCODE-FIELDS"] = function(data, options)
+    {
+	var elto_obj    = null ;
+	var elto_fields = null ;
+        var ret = wepsim_nodejs_get_instructionset(data, options) ;
+
+        // empty firmware
+        if (typeof ret.firmware === "undefined")
+        {
+            console.log('Begin microcode-fields\n' +
+                        '<Empty>\n' +
+                        'End microcode-fields\n') ;
+            return true ;
+        }
+
+        // show firmware fields
+        console.log('Begin microcode-fields') ;
+
+        var keys_byname = {};
+        Object.keys(ret.firmware).forEach(function(key) {
+           keys_byname[ret.firmware[key].name] = ret.firmware[key];
+        });
+
+        var keys_sorted = Object.keys(keys_byname).sort() ;
+        for (var i=0; i<keys_sorted.length; i++)
+        {
+    	     elto_obj = keys_byname[keys_sorted[i]] ;
+
+	     if (typeof elto_obj.fields !== "undefined")
+    	          elto_fields = elto_obj.fields ;
+             else elto_fields = [] ;
+
+	     console.log(elto_obj.name + ': ' + JSON.stringify(elto_fields, null, 5)) ;
+        }
+
+        console.log('End microcode-fields\n') ;
+        return true ;
+    } ;
+
     //
     // HELP (signal, instruction set, etc.)
     //
- 
+
     hash_action.HELP = function(data, options)
     {
         var ret = null ;
 
         wepsim_nodejs_init(data) ;
 
-        if (data.assembly != '')
+        if ((typeof data.assembly != 'undefined') && (data.assembly != '')) {
              ret = wepsim_nodejs_help_signal(data, options) ;
-        else ret = wepsim_nodejs_help_instructionset(data, options) ;
- 
+        }
+   else if ((typeof data.firmware != 'undefined') && (data.firmware != '')) {
+             ret = wepsim_nodejs_help_instructionset(data, options) ;
+        }
+   else if ((typeof options.purify != 'undefined') && (options.purify != '')) {
+             ret = wepsim_nodejs_help_component(data, options) ;
+        }
+   else {
+             ret = wepsim_nodejs_help_components(data, options) ;
+        }
+
         console.log(ret.msg);
         return ret.ok ;
     } ;
- 
+
+
+    //
+    // IMPORT-CREATOR
+    //
+
+    hash_action["IMPORT-CREATOR"] = function(data, options)
+    {
+        var obj_def = JSON.parse(data.str_chk) ;
+        var ret = simlang_firm_is2native(obj_def) ;
+
+        console.log(ret);
+        return true ;
+    } ;
+
+
     //
     // BUILD-CHECKPOINT
     //
- 
+
     hash_action["BUILD-CHECKPOINT"] = function(data, options)
     {
         // pack elements
@@ -269,6 +363,31 @@
         return true ;
     } ;
 
+    //
+    // BUILD-EXAMPLETESTS
+    //
+
+    hash_action["BUILD-EXAMPLETESTS"] = function(data, options)
+    {
+        // initialize
+        wepsim_nodejs_init(data) ;
+
+        // load default examples
+        var examples  = wepsim_nodejs_load_examples() ;
+        var pack_name = "" ;
+        if (data.mode != "") {
+            pack_name = data.mode ;
+        }
+
+        // JSON with test for default examples
+        var json_txt = wepsim_nodejs_examples2tests(pack_name, examples) ;
+        console.log(json_txt);
+
+        // return ok
+        return true ;
+    } ;
+
+
     /**
      * WepSIM actions
      */
@@ -285,7 +404,7 @@
                     ' Please check the command-line syntax used.\n' +
                     ' Action ERROR: ' + err_action + '?\n' +
                     '') ;
- 
+
         return false ;
     }
 

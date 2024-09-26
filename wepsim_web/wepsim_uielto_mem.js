@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -34,7 +34,7 @@
 	      }
 
               // render
-	      render ( )
+	      render ( event_name )
 	      {
 	            this.render_skel() ;
 	            this.render_populate() ;
@@ -43,26 +43,20 @@
 	      render_skel ( )
 	      {
 		    // html holder
-		    var o1 = "<div class='container text-right'>" +
-                             "<a data-toggle='popover-mem' id='popover-mem' " +
-			     "   tabindex='0' class='m-auto show multi-collapse-3'>" +
+		    var o1 = "<div class='container text-end multi-collapse-3 collapse show'>" +
+                             '<span class="my-0" for="popover-mem" style="min-width:95%">' +
+                             '<span data-langkey="quick config">quick config</span>: ' +
+                             "<a data-bs-toggle='popover-mem' id='popover-mem' " +
+			     "   tabindex='0' class='m-auto border-0'>" +
                              "<strong><strong class='fas fa-wrench text-secondary'></strong></strong>" +
-                             "</a>" +
+                             "</a></span>" +
                              "</div>" +
 		             "<div id='memory_MP' style='height:58vh; width:inherit;'></div>" ;
 
 		    this.innerHTML = o1 ;
 
                     // initialize loaded components
-		    wepsim_init_quickcfg("[data-toggle=popover-mem]",
-			                 "click",
-			                 quick_config_mem,
-					 function(shownEvent) {
-                                             var optValue = get_cfg('MEM_show_segments') ;
-                                             $('#label19-' + optValue).button('toggle') ;
-                                                 optValue = get_cfg('MEM_show_source') ;
-                                             $('#label20-' + optValue).button('toggle') ;
-					 }) ;
+                    wepsim_quickcfg_init('pomem1') ;
 	      }
 
 	      render_populate ( )
@@ -131,7 +125,7 @@
 
             // labels (seg)
             var SIMWARE = get_simware() ;
-            var seglabels = SIMWARE.revseg ;
+            var seglabels = SIMWARE.hash_seg_rev ;
 
             // memory
             var base_addrs = main_memory_get_baseaddr() ;
@@ -182,12 +176,16 @@
             {
                 i_key = parseInt(keys[k]) ;
 
-                // [add segment]
+                // [add segment if needed]
                 s1 = s2 = '' ;
 		while ( (seglabels_i < seglabels.length) && (i_key >= seglabels[seglabels_i].begin) )
 		{
-                    s1 = main_memory_showseglst('seg_id' + seglabels_i, seglabels[seglabels_i].name) ;
-                    s2 = main_memory_showsegrow('seg_id' + seglabels_i, seglabels[seglabels_i].name) ;
+                    if (".binary" != seglabels[seglabels_i].name)
+                    {
+                        // ".binary" is an assembly section but not a physical segment
+                        s1 = main_memory_showseglst('seg_id' + seglabels_i, seglabels[seglabels_i].name) ;
+                        s2 = main_memory_showsegrow('seg_id' + seglabels_i, seglabels[seglabels_i].name) ;
+                    }
 
 		    seglabels_i++ ;
 		}
@@ -195,7 +193,7 @@
                 if (s2 !== '') o2 += s2 ;
 
                 // (add row)
-                o2 += main_memory_showrow(cfg, memory_cpy, keys[k], (keys[k] == index), SIMWARE.revlabels2) ;
+                o2 += main_memory_showrow(cfg, memory_cpy, keys[k], (keys[k] == index), SIMWARE.hash_labels_asm_rev) ;
             }
 
             // pack and load html
@@ -203,7 +201,7 @@
 	         '<div class="row">' +
                  '<div class="list-group sticky-top col-auto collapse hide" ' +
                  '     id="lst_seg1">' + o1 + '</div>' +
-                 '<div data-spy="scroll" data-target="#lst_seg1" data-offset="0" ' +
+                 '<div data-spy="scroll" data-bs-target="#lst_seg1" data-offset="0" ' +
                  '     style="overflow-y:scroll; -webkit-overflow-scrolling:touch; height:50vh; width:inherit;"' +
                  '     class="col" id="lst_ins1">' + o2 + '</div>' +
                  '</div>' +
@@ -218,11 +216,13 @@
             // * Configure html options
             element_scroll_set("#lst_ins1", pos) ;
 
-            if (cfg.showsegs)
+            if (cfg.showsegs) {
                 $("#lst_seg1").collapse("show") ;
+            }
 
-            if (cfg.showsrc)
+            if (cfg.showsrc) {
                 $(".mp_tooltip").collapse("show") ;
+            }
 
             // * Update old_main_add for light_update
             old_main_addr = index ;
@@ -245,14 +245,24 @@
 
             // blue for last memory access
             o1 = $("#addr" + old_main_addr) ;
-            o1.css('color', 'black') ;
-            o1.css('font-weight', 'normal') ;
+            if (o1.is(':visible'))
+            {
+		//o1.css('color', 'black') ;
+		  o1.removeClass('text-primary').addClass('text-body-emphasis') ;
+		//o1.css('font-weight', 'normal') ;
+		  o1.removeClass('fw-bold').addClass('fw-normal') ;
+            }
 
             old_main_addr = index ;
 
             o1 = $("#addr" + old_main_addr) ;
-            o1.css('color', 'blue') ;
-            o1.css('font-weight', 'bold') ;
+            if (o1.is(':visible'))
+            {
+		//o1.css('color', 'blue') ;
+		  o1.removeClass('text-body-emphasis').addClass('text-primary') ;
+		//o1.css('font-weight', 'bold') ;
+		  o1.removeClass('fw-normal').addClass('fw-bold') ;
+            }
 
             // show badges
             update_badges() ;
@@ -268,7 +278,7 @@
 
         function main_memory_showsegrow ( seg_id, seg_name )
         {
-            return '<div id="' +  seg_id + '" class="row" data-toggle="collapse" href="#lst_seg1">' +
+            return '<div id="' +  seg_id + '" class="row" data-bs-toggle="collapse" href="#lst_seg1">' +
                    '<u>' + seg_name + '</u>' +
                    '</div>' ;
         }
@@ -317,9 +327,9 @@
             }
 
             // wcolor
-            var wcolor = "color:black; font-weight:normal; " ;
+            var wcolor = "text-body-emphasis fw-normal " ;
 	    if (is_current) {
-                wcolor = "color:blue;  font-weight:bold; " ;
+                wcolor = "text-primary       fw-bold " ;
             }
 
             // value2
@@ -339,29 +349,29 @@
                  {
                      valuei = '<span>' +
                               '<span style="border:1px solid gray;">' + valuei + '</span>' +
-                              '<span class="badge badge-pill badge-info" ' +
+                              '<span class="badge rounded-pill text-bg-info" ' +
                               '      style="position:relative;top:-8px;z-index:2">' + labeli + '</span>' +
                               '</span>' ;
                  }
 
-                 value2 += '<span class="mr-1">' + valuei + '</span>' ;
+                 value2 += '<span class="me-1">' + valuei + '</span>' ;
             }
 
             // build HTML
-	    o = "<div class='row' id='addr" + addr + "'" +
-                "     style='" + wcolor + " font-size:small; border-bottom: 1px solid lightgray !important'>" +
+	    o = "<div class='row " + wcolor + "' id='addr" + addr + "'" +
+                "     style='font-size:small; border-bottom: 1px solid lightgray !important'>" +
 	        "<div class='col-1 px-0' align='center'>" +
                      '<span id="bg' + addr + '" class="mp_row_badge"></span>' +
                 "</div>"+
-		"<div class='col-6 col-md-5 pr-2' align='right'>" +
+		"<div class='col-6 col-md-5 pe-2' align='right'>" +
                      '<small>0x</small>' + simcoreui_pack(valkeys[0], 5).toUpperCase() +
                      '<span> ... </span>' +
                      '<span class="d-none d-sm-inline-flex"><small>0x</small></span>' +
                      simcoreui_pack(valkeys[3], 5).toUpperCase() +
                 "</div>" +
-	        "<div class='col-5 col-md-6 px-3'  align='left'>" + value2 + "</div>" +
-	        "<div class='col-7 col-md-6 w-100 mp_tooltip collapse hide' align='left'>&nbsp;</div>" +
-	        "<div class='col-5 col-md-6 px-3  mp_tooltip collapse hide' align='left'>" + src_html + "</div>"+
+	        "<div class='col-5 col-md-6 px-3                          ms-auto'>" + value2 + "</div>" +
+	        "<div class='col-7 col-md-6      mp_tooltip collapse hide ms-auto'>&nbsp;</div>" +
+	        "<div class='col-5 col-md-6 px-3 mp_tooltip collapse hide ms-auto mb-2'>" + src_html + "</div>"+
                 "</div>";
 
 	    return o ;
@@ -369,17 +379,17 @@
 
         function scroll_memory_to_segment ( seg_id )
         {
-            return element_scroll_setRelative('#lst_ins1', '#'+seg_id, -150) ;
+            return element_scroll_setRelative('#lst_ins1', '#'+seg_id, -250) ;
         }
 
         function scroll_memory_to_address ( addr )
         {
-            return element_scroll_setRelative('#lst_ins1', '#addr'+addr, -150) ;
+            return element_scroll_setRelative('#lst_ins1', '#addr'+addr, -250) ;
         }
 
         function scroll_memory_to_lastaddress ( )
         {
-            return element_scroll_setRelative('#lst_ins1', '#addr'+old_main_addr, -150) ;
+            return element_scroll_setRelative('#lst_ins1', '#addr'+old_main_addr, -250) ;
         }
 
         function update_badges ( )
@@ -417,69 +427,12 @@
                  }
 
 		 old_html  = $("#bg" + base_addrs[elto]).html() ;
-                 old_html += '<div class="badge badge-primary mx-1">' +
+                 old_html += '<div class="badge bg-primary mx-1">' +
                              elto.toUpperCase() +
                              '</div>' +
                           // '<i class="mx-auto text-secondary fas fa-arrow-right"></i>' ;
                              '' ;
 		 $("#bg" + base_addrs[elto]).html(old_html) ;
             }
-        }
-
-
-        /*
-         * Quick menu (display format)
-         */
-
-        function quick_config_mem ( )
-        {
-	      return "<div class='container mt-1'>" +
-                     "<div class='row'>" +
-                         quickcfg_html_header("Display format") +
-                         quickcfg_html_btn("(*) 0x3B<sub>16</sub>",
-				           "update_cfg(\"MEM_display_format\", \"unsigned_16_nofill\"); " +
-					   "show_memories_values();",
-                                           "col-6") +
-                         quickcfg_html_btn("073<sub>8</sub>",
-					   "update_cfg(\"MEM_display_format\", \"unsigned_8_nofill\"); " +
-					   "show_memories_values();",
-                                           "col-6") +
-                         quickcfg_html_btn("59<sub>10</sub>",
-					   "update_cfg(\"MEM_display_format\", \"unsigned_10_nofill\"); " +
-					   "show_memories_values();",
-                                           "col-6") +
-                         quickcfg_html_btn(";<sub>ascii</sub>",
-					   "update_cfg(\"MEM_display_format\", \"char_ascii_nofill\"); " +
-					   "show_memories_values();",
-                                           "col-6") +
-                     quickcfg_html_br() +
-                         quickcfg_html_header("Display direction") +
-                         quickcfg_html_btn("(*) 04 -> 00",
-					   "update_cfg(\"MEM_display_direction\", \"h2l\"); " +
-					   "show_memories_values();",
-                                           "col-6") +
-                         quickcfg_html_btn("00 -> 04",
-					   "update_cfg(\"MEM_display_direction\", \"l2h\"); " +
-					   "show_memories_values();",
-                                           "col-6") +
-                     quickcfg_html_br() +
-                         quickcfg_html_header("Display segments") +
-			 quickcfg_html_onoff('19',
-					     'show segments',
-					     "  $('#lst_seg1').collapse('hide');" +
-					     "  update_cfg('MEM_show_segments', false);",
-					     "  $('#lst_seg1').collapse('show');" +
-					     "  update_cfg('MEM_show_segments', true);") +
-                         quickcfg_html_header("Display origin") +
-			 quickcfg_html_onoff('20',
-					     'show origin',
-					     "  $('.mp_tooltip').collapse('hide');" +
-					     "  update_cfg('MEM_show_source', false);",
-					     "  $('.mp_tooltip').collapse('show');" +
-					     "  update_cfg('MEM_show_source', true);") +
-                     quickcfg_html_br() +
-                       quickcfg_html_close('popover-mem') +
-		     "</div>" +
-		     "</div>" ;
         }
 

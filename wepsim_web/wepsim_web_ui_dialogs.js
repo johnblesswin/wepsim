@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -37,7 +37,13 @@
 		         return "<div id='scroller-lssvasm' class='container-fluid p-0' " +
 	           	        "     style='overflow:auto; -webkit-overflow-scrolling:touch;'> " +
                                "<div class='row m-0'>" +
-                               "<div class='col-12 col-sm-6 p-2'>" +
+                               "<div class='col-12 col-sm-4 p-2'>" +
+                                "<ws-share-link " +
+                                "    fid='inputToShareAs2' " +
+                                "    jshare='asm' " +
+                                "></ws-share-link>" +
+                               "</div>" +
+                               "<div class='col-12 col-sm-4 p-2'>" +
                                 "<ws-save-file " +
                                 "    fid='inputFileNameToSaveAs2' " +
                                 "    jsave='var ifntsa2 = document.getElementById(\"inputFileNameToSaveAs2\");" +
@@ -46,30 +52,28 @@
 				"	     wepsim_save_to_file(textToWrite, fileNameToSaveAs);" +
 		                "            inputasm.is_modified = false;" +
                                 "            return false;'" +
-                                "    jshare='var sorg   = \"assembly\"; " +
-                                "            var stitle = \"Assembly code...\"; " +
-                                "            var stext  = inputasm.getValue(); " +
-                                "            var surl   = \"\"; " +
-                                "            share_information(sorg, stitle, stext, surl); " +
-                                "            return false;'" +
                                 "></ws-save-file>" +
                                "</div>" +
-                               "<div class='col-12 col-sm-6 p-2'>" +
+                               "<div class='col-12 col-sm-4 p-2'>" +
                                 "<ws-load-file " +
                                 "    fid='fileToLoad2' " +
                                 "    jload='var ftl = document.getElementById(\"fileToLoad2\").files[0];" +
                                 "           wepsim_file_loadFrom(ftl, " +
-                                "		                 function(txt){ inputasm.setValue(txt); });" +
+                                "		                 function(txt){ " +
+                                "		             inputasm.setValue(txt);" +
+    				"                            wsweb_dialog_close(\"load_save_assembly\");" +
+			        "		             wepsim_notify_success(\"<strong>INFO</strong>\", \"Loaded!.\") ; " +
+                                "		                              });" +
                                 "           return false;'></ws-load-file>" +
                                "</div>" +
                                "</div>" +
-			   	"</div>" ;
+			       "</div>" ;
 	              },
 	    buttons:  {
 			 close: {
-				label:     '<i class="fa fa-times mr-2"></i>' +
+				label:     '<i class="fa fa-times me-2"></i>' +
 					   '<span data-langkey="Close">Close</span>',
-			        className: "btn btn-primary btn-sm col col-sm-3 float-right shadow-none",
+			        className: "btn btn-primary btn-sm col col-sm-3 float-end shadow-none",
 				callback:  function() {
     					       wsweb_dialog_close('load_save_assembly') ;
 					   }
@@ -77,12 +81,8 @@
 	              },
             size:     'large',
             onshow:   function() {
-			 var o = $("#lssvasm") ;
-		         o.find('.modal-header').attr("style", "background-color: black !important") ;
-			 o.find('.modal-title').addClass("ml-auto") ;
-
 			 // uicfg and events
-			 $('[data-toggle=tooltip]').tooltip('hide');
+                         wepsim_tooltips_hide('[data-bs-toggle=tooltip]') ;
 			 wepsim_uicfg_apply() ;
 
 			 wsweb_scroll_record('#scroller-lssvasm') ;
@@ -102,23 +102,28 @@
 		         return "<div id='scroller-lssvfir' class='container-fluid p-0' " +
 	           	        "     style='overflow:auto; -webkit-overflow-scrolling:touch;'> " +
                                "<div class='row m-0'>" +
-                               "<div class='col-12 col-sm-6 p-2'>" +
+                               "<div class='col-12 col-sm-4 p-2'>" +
+                                "<ws-share-link " +
+                                "    fid='inputToShareAs2' " +
+                                "    jshare='mc' " +
+                                "></ws-share-link>" +
+                               "</div>" +
+                               "<div class='col-12 col-sm-4 p-2'>" +
 		                "<div class='card border-secondary h-100'>" +
 			        "<div class='card-header border-secondary text-white bg-secondary p-1'>" +
 		                "  <h5 class='m-0'>" +
 				"  <span class='text-white bg-secondary' data-langkey='Output'>Output</span>" +
-                                //
-                                "<div class='btn-group float-right'>" +
-				"  <button class='btn btn-light mx-1 py-0 col-auto' " +
+                                "<div class='btn-group float-end'>" +
+				"  <button class='btn bg-body-tertiary mx-1 py-0 col-auto' " +
                                 "          onclick='var fileNameToSaveAs  = document.getElementById(\"inputFileNameToSaveAs\").value;" +
 		                "                   var textToWrite       = inputfirm.getValue();" +
 		                "                   wepsim_save_to_file(textToWrite, fileNameToSaveAs);" +
 		                "                   inputfirm.is_modified = false;" +
 				"		    return false;'" +
                                 "><span data-langkey='Save'>Save</span></button>" +
-                                "  <button type='button' class='btn btn-light dropdown-toggle dropdown-toggle-split' " +
-                                "          data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
-                                "    <span class='sr-only'>Toggle Dropdown</span>" +
+                                "  <button type='button' class='btn bg-body-tertiary dropdown-toggle dropdown-toggle-split' " +
+                                "          data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                                "    <span class='visually-hidden sr-only'>Toggle Dropdown</span>" +
                                 "  </button>" +
                                 "  <div class='dropdown-menu'>" +
                                 "    <h6 class='dropdown-header'>Default:</h6>" +
@@ -142,16 +147,21 @@
 			      	" <div class='card-body'>" +
 		                "<label for='inputFileNameToSaveAs'><em><span data-langkey='Please write the file name'>Please write the file name</span>:</em></label>" +
 	                        "<p><input aria-label='filename to save content' id='inputFileNameToSaveAs'" +
-                                "          class='form-control btn-outline-dark' placeholder='File name where microcode will be saved' style='min-width: 90%;'/></p>" +
+                                "          class='form-control btn-outline-secondary' placeholder='File name where microcode will be saved' style='min-width: 90%;'/></p>" +
 			     	" </div>" +
 			   	"</div>" +
                                "</div>" +
-                               "<div class='col-12 col-sm-6 p-2'>" +
+                               "<div class='col-12 col-sm-4 p-2'>" +
                                 "<ws-load-file " +
                                 "    fid='fileToLoad' " +
                                 "    jload='var ftl = document.getElementById(\"fileToLoad\").files[0];" +
                                 "           wepsim_file_loadFrom(ftl, " +
-                                "		                 function(txt){ inputfirm.setValue(txt); });" +
+                                "		                 function(txt){ " +
+                                "		             inputfirm.setValue(\"Please wait...\");" +
+    				"                            wsweb_dialog_close(\"load_save_firmware\");" +
+                                "		             inputfirm.setValue(txt);" +
+			        "		             wepsim_notify_success(\"<strong>INFO</strong>\", \"Loaded!.\") ; " +
+                                "		                              });" +
                                 "           return false;'></ws-load-file>" +
                                "</div>" +
                                "</div>" +
@@ -159,9 +169,9 @@
 		      },
 	    buttons:  {
 			 close: {
-				label:     '<i class="fa fa-times mr-2"></i>' +
+				label:     '<i class="fa fa-times me-2"></i>' +
 					   '<span data-langkey="Close">Close</span>',
-			        className: "btn btn-primary btn-sm col col-sm-3 float-right shadow-none",
+			        className: "btn btn-primary btn-sm col col-sm-3 float-end shadow-none",
 				callback:  function() {
     					       wsweb_dialog_close('load_save_firmware') ;
 					   }
@@ -169,18 +179,54 @@
 	              },
             size:     'large',
             onshow:   function() {
-			 var o = $("#lssvfir") ;
-		         o.find('.modal-header').attr("style", "background-color: black !important") ;
-			 o.find('.modal-title').addClass("ml-auto") ;
-
 		         // dropify
 			 $('.dropify').dropify() ;
 
 			 // uicfg and events
-			 $('[data-toggle=tooltip]').tooltip('hide');
+                         wepsim_tooltips_hide('[data-bs-toggle=tooltip]') ;
 			 wepsim_uicfg_apply() ;
 
 			 wsweb_scroll_record('#scroller-lssvfir') ;
+			 simcore_record_captureInit() ;
+		      }
+         },
+
+         flash_assembly: {
+            id:        "flashasm",
+	    title:     function() {
+                          return wepsim_config_dialog_title("Flash Assembly",
+                                                            "secondary",
+							    "var ws_idiom = get_cfg('ws_idiom');" +
+							    "i18n_update_tags('dialogs', ws_idiom);") ;
+		       },
+            body:      function() {
+		         return "<div id='scroller-flashasm' class='container-fluid p-0' " +
+	           	        "     style='overflow:auto; -webkit-overflow-scrolling:touch;'> " +
+                               "<div class='row m-0'>" +
+                               "<div class='col-12 p-2'>" +
+                                '<ws-flash_asm>' +
+                                '</ws-flash_asm>' +
+                               "</div>" +
+                               "</div>" +
+			   	"</div>" ;
+	              },
+	    buttons:  {
+			 close: {
+				label:     '<i class="fa fa-times me-2"></i>' +
+					   '<span data-langkey="Close">Close</span>',
+			        className: "btn btn-primary btn-sm col col-sm-3 float-end shadow-none",
+				callback:  function() {
+    					       wsweb_dialog_close('flash_assembly') ;
+					   }
+			 }
+	              },
+            size:     'large',
+            onshow:   function() {
+			 // uicfg and events
+                         wepsim_tooltips_hide('[data-bs-toggle=tooltip]') ;
+			 wepsim_uicfg_apply() ;
+
+			 wsweb_scroll_record('#scroller-flashasm') ;
 			 simcore_record_captureInit() ;
 		      }
          },
@@ -195,16 +241,15 @@
 							    "i18n_update_tags('dialogs', ws_idiom);") ;
 		     },
             body:    function() {
-		        return "<div id='scroller-bin2a' class='container-fluid p-1' " +
-           		       "     style='max-height:70vh; max-width:100%; overflow:auto; -webkit-overflow-scrolling:touch;'> " +
+		        return "<div id='scroller-bin2a' class='container-fluid p-1'>" +
 	           	       "<ws-bin_asm></ws-bin_asm>" +
 		               "</div>" ;
 		     },
 	    buttons: {
 			OK: {
-				label:     '<i class="fa fa-times mr-2"></i>' +
+				label:     '<i class="fa fa-times me-2"></i>' +
 					   '<span data-langkey="Close">Close</span>',
-			        className: "btn btn-primary btn-sm col col-sm-3 float-right shadow-none",
+			        className: "btn btn-primary btn-sm col col-sm-3 float-end shadow-none",
 			        callback:  function() {
     					      wsweb_dialog_close('binary_asm') ;
 				           }
@@ -215,16 +260,18 @@
                          // get binary
 			 var simware = wepsim_get_binary_code() ;
 			 if (null == simware) {
-                             setTimeout(function() { wsweb_dialog_close('binary_asm'); }, 50) ;
+                             setTimeout(function() {
+                                wsweb_dialog_close('binary_asm') ;
+                             }, 50) ;
 			     return ;
 			 }
 
 			 // uicfg and events
-			 $('[data-toggle=tooltip]').tooltip('hide') ;
+                         wepsim_tooltips_hide('[data-bs-toggle=tooltip]') ;
 			 wepsim_uicfg_apply() ;
 
                          // show binary
-                         setTimeout(function(){
+                         setTimeout(function() {
                             $('#bin_asm').modal('handleUpdate') ;
 			    wsweb_scroll_record('#scroller-bin2a') ;
 			    simcore_record_captureInit() ;
@@ -242,16 +289,15 @@
 							    "i18n_update_tags('dialogs', ws_idiom);") ;
 		     },
             body:    function() {
-		        return "<div id='scroller-bin2b' class='container-fluid p-1' " +
-           		       "     style='max-height:70vh; max-width:100%; overflow:auto; -webkit-overflow-scrolling:touch;'> " +
+		        return "<div id='scroller-bin2b' class='container-fluid p-1'>" +
 	           	       "<ws-bin_mc></ws-bin_mc>" +
 		               "</div>" ;
 		     },
 	    buttons: {
 			OK: {
-				label:     '<i class="fa fa-times mr-2"></i>' +
+				label:     '<i class="fa fa-times me-2"></i>' +
 					   '<span data-langkey="Close">Close</span>',
-			        className: "btn btn-primary btn-sm col col-sm-3 float-right shadow-none",
+			        className: "btn btn-primary btn-sm col col-sm-3 float-end shadow-none",
 			        callback:  function() {
     					      wsweb_dialog_close('binary_fir') ;
 				           }
@@ -262,12 +308,14 @@
                          // get binary
 			 var simware = wepsim_get_binary_microcode() ;
 			 if (null == simware) {
-                             setTimeout(function() { wsweb_dialog_close('binary_fir'); }, 50) ;
+                             setTimeout(function() {
+                                           wsweb_dialog_close('binary_fir');
+                             }, 50) ;
 			     return ;
 			 }
 
 			 // uicfg and events
-			 $('[data-toggle=tooltip]').tooltip('hide') ;
+                         wepsim_tooltips_hide('[data-bs-toggle=tooltip]') ;
 			 wepsim_uicfg_apply() ;
 
                          // show binary
@@ -297,20 +345,20 @@
 		     },
 	    buttons: {
 			OK: {
-				label:     '<i class="fa fa-times mr-2"></i>' +
+				label:     '<i class="fa fa-times me-2"></i>' +
 					   '<span data-langkey="Close">Close</span>',
-			        className: "btn btn-primary btn-sm col col-sm-3 float-right shadow-none",
+			        className: "btn btn-primary btn-sm col col-sm-3 float-end shadow-none",
 			        callback:  function() {
     					      wsweb_dialog_close('about') ;
 				           }
 			     }
 	             },
-            size:    '',
+            size:    'large',
             onshow:  function() {
 			 $('div.wsversion').replaceWith(get_cfg('version')) ;
 
 			 // uicfg and events
-			 $('[data-toggle=tooltip]').tooltip('hide');
+                         wepsim_tooltips_hide('[data-bs-toggle=tooltip]') ;
 			 wepsim_uicfg_apply() ;
 
 			 wsweb_scroll_record('#scroller-about1') ;
@@ -332,9 +380,9 @@
 		      },
 	    buttons:  {
 			Close: {
-				label:     '<i class="fa fa-times mr-2"></i>' +
+				label:     '<i class="fa fa-times me-2"></i>' +
 					   '<span data-langkey="Close">Close</span>',
-			        className: "btn btn-primary btn-sm col col-sm-3 float-right shadow-none",
+			        className: "btn btn-primary btn-sm col col-sm-3 float-end shadow-none",
 			        callback:  function() {
     					       wsweb_dialog_close('notifications') ;
 				           }
@@ -349,7 +397,7 @@
 			 i18n_update_tags('cfg') ;
 
 			 // uicfg and events
-			 $('[data-toggle=tooltip]').tooltip('hide');
+                         wepsim_tooltips_hide('[data-bs-toggle=tooltip]') ;
 			 wepsim_uicfg_apply() ;
 
 			 wsweb_scroll_record('#scroller-notifications3') ;
@@ -362,21 +410,33 @@
             id:      "example1",
 	    title:    function() {
                           return wepsim_config_dialog_title("Examples",
-                                                            "info",
+                                                            "primary",
 							    "var ws_idiom = get_cfg('ws_idiom');" +
 							    "i18n_update_tags('examples', ws_idiom);") ;
 		      },
             body:    function() {
-                        return "<div id='scroller-example1' class='container-fluid p-0' " +
-                               "     style='max-height:70vh; overflow:auto; -webkit-overflow-scrolling:touch;'>" +
-                               "<ws-examples></ws-examples>" +
-                               "</div>" ;
+                        return "<ws-examples id='examples1'></ws-examples>" ;
 		     },
 	    buttons: {
+			Index: {
+			   label:     '<i class="fas fa-list"></i> ' +
+                                      '<span data-langkey="Example sets">Example sets</span>',
+			   className: 'btn btn-info text-white btn-sm col col-sm-4 float-end shadow-none',
+			   callback:  function() {
+				         // ui elements
+                                         table_examplesets_html('#examples1-scroller', ws_info.example_set) ;
+
+			 		 // uicfg and events
+                                         wepsim_uicfg_apply() ;
+	    	 	                 simcore_record_captureInit() ;
+
+					 return false ;
+				      }
+			},
 			OK: {
-				label:     '<i class="fa fa-times mr-2"></i>' +
+				label:     '<i class="fa fa-times me-2"></i>' +
 					   '<span data-langkey="Close">Close</span>',
-			        className: "btn btn-primary btn-sm col col-sm-3 float-right shadow-none",
+			        className: "btn btn-primary btn-sm col col-sm-3 float-end shadow-none",
 			        callback:  function() {
     					      wsweb_dialog_close('examples') ;
 				           }
@@ -389,7 +449,7 @@
                          i18n_update_tags('examples', ws_idiom) ;
 
 			 // uicfg and events
-			 $('[data-toggle=tooltip]').tooltip('hide');
+                         wepsim_tooltips_hide('[data-bs-toggle=tooltip]') ;
 			 wepsim_uicfg_apply() ;
 
 			 wsweb_scroll_record('#scroller-example1') ;
@@ -407,15 +467,12 @@
 							    "i18n_update_tags('cfg', ws_idiom);") ;
 		      },
             body:    function() {
-                        return "<div id='scroller-config2' class='container-fluid p-0' " +
-                               "     style='max-height:70vh; overflow:auto; -webkit-overflow-scrolling:touch;'>" +
-			       "<ws-config></ws-config>" +
-                               "</div>" ;
+                        return "<ws-config id='config2'></ws-config>" ;
 		     },
 	    buttons: {
 			Reset: {
 			   label:     "<span data-langkey='Reset'>Reset</span>",
-			   className: "btn btn-outline-info btn-sm col col-sm-3 float-left shadow-none mr-auto",
+			   className: "btn btn-outline-info btn-sm col col-sm-3 float-start shadow-none me-auto",
 			   callback:  function() {
 		         		 // confirm reset
     					 wsweb_dialog_close('config') ;
@@ -425,9 +482,9 @@
 				      }
 			},
 			OK: {
-				label:     '<i class="fa fa-times mr-2"></i>' +
+				label:     '<i class="fa fa-times me-2"></i>' +
 					   '<span data-langkey="Close">Close</span>',
-			        className: "btn btn-primary btn-sm col col-sm-3 float-right shadow-none",
+			        className: "btn btn-primary btn-sm col col-sm-3 float-end shadow-none",
 			        callback:  function() {
     					      wsweb_dialog_close('config') ;
 				           }
@@ -435,17 +492,19 @@
 	             },
             size:    'large',
             onshow:  function() {
-                         setTimeout(function() { $("#scroller-config2").scrollTop(0); }, 50);
+                         setTimeout(function() {
+                                       $("#config2-scroller").scrollTop(0);
+                         }, 50);
 
 		         // ui lang
                          var ws_idiom = get_cfg('ws_idiom') ;
                          i18n_update_tags('cfg', ws_idiom) ;
 
 			 // uicfg and events
-			 $('[data-toggle=tooltip]').tooltip('hide');
+                         wepsim_tooltips_hide('[data-bs-toggle=tooltip]') ;
 			 wepsim_uicfg_apply() ;
 
-			 wsweb_scroll_record('#scroller-config2') ;
+			 wsweb_scroll_record('#config2-scroller') ;
 			 simcore_record_captureInit() ;
 		     }
          },
@@ -473,7 +532,7 @@
 		buttons: {
 				reset: {
 				   label:     "<span data-langkey='Reset'>Reset</span>",
-				   className: 'btn-danger col float-left',
+				   className: 'btn-danger col float-start',
 				   callback: function() {
 						// reset
 						reset_cfg() ;
@@ -486,9 +545,9 @@
 					     },
 				},
 				close: {
-				   label:     '<i class="fa fa-times mr-2"></i>' +
+				   label:     '<i class="fa fa-times me-2"></i>' +
 					      '<span data-langkey="Close">Close</span>',
-				   className: 'btn-dark col float-right'
+				   className: 'btn-dark col float-end'
 				}
 			 },
 		size:    '',
@@ -507,26 +566,20 @@
 	    title:    function() {
                           return wepsim_config_dialog_title("Help",
                                                             "success",
-							    "wepsim_help_refresh();" +	
 							    "var ws_idiom = get_cfg('ws_idiom');" +
 							    "i18n_update_tags('help', ws_idiom);") ;
 		      },
             body:    function() {
-                        return "<div id='help1_ref' style='display:none;'></div>" +
-                               "<div class='ui-body-d ui-content p-0' id='scroller-help1' " +
-                               "     style='min-height:50vh; max-height:70vh; overflow-y:auto; -webkit-overflow-scrolling:touch;'>" +
-                               "<ws-help></ws-help>" +
-                               "</div>" ;
+                        return "<ws-help id='help1_ref'></ws-help>" ;
 	             },
 	    buttons: {
 			Index: {
 			   label:     '<i class="fas fa-list"></i> ' +
                                       '<span data-langkey="Help Index">Help Index</span>',
-			   className: 'btn btn-success btn-sm col col-sm-3 float-right shadow-none',
+			   className: 'btn btn-success btn-sm col col-sm-3 float-end shadow-none',
 			   callback:  function() {
 				         // ui elements
-				         wepsim_help_set_relative('') ;
-				         wepsim_help_refresh() ;
+				         wepsim_help_set('code', 'index') ;
 
 			 		 // uicfg and events
                                          wepsim_uicfg_apply() ;
@@ -536,9 +589,9 @@
 				      }
 			},
 			OK: {
-				label:     '<i class="fa fa-times mr-2"></i>' +
+				label:     '<i class="fa fa-times me-2"></i>' +
 					   '<span data-langkey="Close">Close</span>',
-			        className: "btn btn-primary btn-sm col col-sm-3 float-right shadow-none",
+			        className: "btn btn-primary btn-sm col col-sm-3 float-end shadow-none",
 			        callback:  function() {
 		                              simcore_record_append_pending() ;
     					      wsweb_dialog_close('help') ;
@@ -548,15 +601,14 @@
             size:    'extra-large',
             onshow:  function() {
 		         // ui elements
-    			 wepsim_help_set_relative('') ;
-	    		 wepsim_help_refresh();
+    			 wepsim_help_set('code', 'index') ;
 
 		         // ui lang
                          var ws_idiom = get_cfg('ws_idiom') ;
                          i18n_update_tags('help', ws_idiom) ;
 
 			 // uicfg and events
-			 $('[data-toggle=tooltip]').tooltip('hide') ;
+                         wepsim_tooltips_hide('[data-bs-toggle=tooltip]') ;
 			 wepsim_uicfg_apply() ;
 
 			 wsweb_scroll_record('#scroller-help1') ;
@@ -577,16 +629,16 @@
 		buttons: {
 				reset: {
 				   label:     "<span data-langkey='Reset'>Reset</span>",
-				   className: 'btn-danger col float-left',
+				   className: 'btn-danger col float-start',
 				   callback: function() {
 						wsweb_record_reset();
 						return true;
 					     },
 				},
 				close: {
-				   label:     '<i class="fa fa-times mr-2"></i>' +
+				   label:     '<i class="fa fa-times me-2"></i>' +
 					      '<span data-langkey="Close">Close</span>',
-				   className: 'btn-dark col float-right'
+				   className: 'btn-dark col float-end'
 				}
 			 },
 		size:    '',
@@ -613,9 +665,9 @@
 	             },
 	    buttons: {
 			OK: {
-				label:     '<i class="fa fa-times mr-2"></i>' +
+				label:     '<i class="fa fa-times me-2"></i>' +
 					   '<span data-langkey="Close">Close</span>',
-			        className: "btn btn-primary btn-sm col col-sm-3 float-right shadow-none",
+			        className: "btn btn-primary btn-sm col col-sm-3 float-end shadow-none",
 			        callback:  function() {
     					      wsweb_dialog_close('state') ;
 				           }
@@ -628,7 +680,7 @@
                          i18n_update_tags('states', ws_idiom) ;
 
 			 // uicfg and events
-			 $('[data-toggle=tooltip]').tooltip('hide') ;
+                         wepsim_tooltips_hide('[data-bs-toggle=tooltip]') ;
 			 wepsim_uicfg_apply() ;
 
 	    	 	 simcore_record_captureInit() ;
@@ -666,7 +718,7 @@
                                     "             return false;'" +
                                     "   ></ws-save-file>" +
                                     "   <input aria-label='associated tag to be saved' id='tagToSave1'" +
-                                    "          class='form-control btn-outline-dark' " +
+                                    "          class='form-control btn-outline-secondary' " +
                                     "          type='hidden' " +
                                     "          value='" + now + "' " +
                                     "          placeholder='Associated tag to be saved (if any)' " +
@@ -688,27 +740,27 @@
                                     "      <div class='card-header border-secondary text-white bg-secondary p-1'>" +
                                     "	  <h5 class='m-0'>" +
                                     "	    <span class='text-white bg-secondary' data-langkey='Browser cache'>Browser cache</span>" +
-                                    "	    <button class='btn btn-light mx-1 float-right py-0 col-auto'" +
+                                    "	    <button class='btn bg-body-tertiary mx-1 float-end py-0 col-auto'" +
                                     "		    onclick='var ret = wepsim_checkpoint_loadFromCache(\"browserCacheElto\");" +
                                     "			     wsweb_dialog_close(\"current_checkpoint\");" +
                                     "			     if (ret.error)" +
                                     "				  wepsim_notify_success(\"<strong>INFO</strong>\", ret.msg);" +
                                     "			     else wepsim_notify_success(\"<strong>INFO</strong>\", \"Processing load request...\");" +
                                     "			     return false;'><span data-langkey='Load'>Load</span></button>" +
-                                    "		  <div class='dropdown float-right'>" +
-                                    "		    <button class='btn btn-light text-danger py-0 mx-1 float-right col-auto dropdown-toggle' " +
-                                    "			    type='button' id='resetyn2' data-toggle='dropdown' " +
+                                    "		  <div class='dropdown float-end'>" +
+                                    "		    <button class='btn bg-body-tertiary text-danger py-0 mx-1 float-end col-auto dropdown-toggle' " +
+                                    "			    type='button' id='resetyn2' data-bs-toggle='dropdown' " +
                                     "			    aria-haspopup='true' aria-expanded='false' " +
                                     "			    ><span data-langkey='Reset'>Reset</span></button>" +
                                     "		    </button>" +
                                     "		    <div class='dropdown-menu' aria-labelledby='resetyn2'>" +
-                                    "		     <a class='dropdown-item py-2 bg-white text-danger' type='button' " +
+                                    "		     <a class='dropdown-item py-2 bg-body text-danger' type='button' " +
                                     "			onclick='wepsim_checkpoint_clearCache();" +
                                     "				 wepsim_checkpoint_listCache(\"browserCacheList1\");" +
                                     "				 return false;'" +
                                     "			 ><span data-langkey='Yes'>Yes</span></a>" +
                                     "		      <div class='dropdown-divider'></div>" +
-                                    "		      <a class='dropdown-item py-2 bg-white text-info' type='button' " +
+                                    "		      <a class='dropdown-item py-2 bg-body text-info' type='button' " +
                                     "			 ><span data-langkey='No'>No</span></a>" +
                                     "		    </div>" +
                                     "		  </div>" +
@@ -726,9 +778,9 @@
 			 },
 		buttons: {
 			     close: {
-				label:     '<i class="fa fa-times mr-2"></i>' +
+				label:     '<i class="fa fa-times me-2"></i>' +
 					   '<span data-langkey="Close">Close</span>',
-			        className: "btn btn-primary btn-sm col col-sm-3 float-right shadow-none",
+			        className: "btn btn-primary btn-sm col col-sm-3 float-end shadow-none",
 			        callback:  function() {
     					      wsweb_dialog_close('current_checkpoint') ;
 				           }
@@ -746,7 +798,7 @@
 				 i18n_update_tags('dialog', ws_idiom) ;
 
 				 // uicfg and events
-				 $('[data-toggle=tooltip]').tooltip('hide') ;
+                                 wepsim_tooltips_hide('[data-bs-toggle=tooltip]') ;
 				 wepsim_uicfg_apply() ;
 
 				 simcore_record_captureInit() ;
@@ -773,9 +825,9 @@
 		     },
 	    buttons: {
 			OK: {
-				label:     '<i class="fa fa-times mr-2"></i>' +
+				label:     '<i class="fa fa-times me-2"></i>' +
 					   '<span data-langkey="Close">Close</span>',
-			        className: "btn btn-primary btn-sm col col-sm-3 float-right shadow-none",
+			        className: "btn btn-primary btn-sm col col-sm-3 float-end shadow-none",
 			        callback:  function() {
     					      wsweb_dialog_close('reload') ;
 				           }
@@ -784,7 +836,7 @@
             size:    'large',
             onshow:  function() {
 			 // uicfg and events
-			 $('[data-toggle=tooltip]').tooltip('hide');
+                         wepsim_tooltips_hide('[data-bs-toggle=tooltip]') ;
 			 wepsim_uicfg_apply() ;
 
 			 wsweb_scroll_record('#scroller-reload1') ;

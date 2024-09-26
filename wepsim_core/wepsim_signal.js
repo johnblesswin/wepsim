@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -29,7 +29,7 @@
                               '                 var shkey = $(\'#ask_skey\').val(); ' +
                               '                 update_signal_loadhelp(\'#help2\', shval, shkey);" ' +
 			      '        type="button" class="btn btn-success">Help</button>' ;
-	        
+
                 return wepsim_config_dialog_dropdown("success",
 						     b_btns,
 						     'var shval = $(\'#ask_shard\').val(); ' +
@@ -46,7 +46,9 @@
 		var input_help  = '' ;
 		var behav_raw   = '' ;
 		var behav_str   = '' ;
-		var n = 0;
+		var notif       = '' ;
+		var n10 = 0;
+		var n2  = 0;
 
 		var nvalues = Math.pow(2, signal_obj.nbits) ;
 		if (signal_obj.behavior.length == nvalues)
@@ -61,7 +63,7 @@
 			 }
 			 str_bolded = ' ' ;
 			 if (k == signal_obj.default_value) {
-			     str_bolded = '<span class="badge badge-info">default value</span>' ;
+			     str_bolded = '<span class="badge bg-info">default value</span>' ;
 			 }
 
 			 behav_raw = signal_obj.behavior[k] ;
@@ -70,14 +72,24 @@
 			     behav_str = '&lt;without main effect&gt;' ;
 			 }
 
-			 n = k.toString(10) ;
+			 n10 = k.toString(10) ;
+                         n2  = k.toString(2).padStart(signal_obj.nbits, '0') ;
+
+                         if (nvalues != 2) {
+                             notif = '<span class="position-absolute top-100 start-100 translate-middle badge rounded-pill bg-success">' + n10 + '</span>' ;
+                         }
+
 			 input_help += '<li class="list-group-item p-1">' +
-				       '<label class="m-1 btn-like" id="' + key + '_' + n + '">' +
-				       '  <input aria-label="value ' + n + '" type="radio" name="ask_svalue" ' +
-				       '         value="' + n + '" ' + str_checked + '/>' +
-				       '  <span class="badge badge-secondary badge-pill">' + n + '</span>' + '&nbsp;' +
+				       '<label class="m-1 btn-like" id="' + key + '_' + n10 + '">' +
+				       '  <input aria-label="value ' + n10 + '" type="radio" name="ask_svalue" ' +
+				       '         value="' + n10 + '" ' + str_checked + '/>' +
+				       '<span class="badge bg-secondary badge-pill position-relative mx-2">' +
+                                         n2 + notif +
+                                       '</span>' +
 				       '  <span>' + behav_str + '</span>&nbsp;' + str_bolded +
-				       '  <p class="m-0 ml-3 bg-light collapse collapse7"><small>' + behav_raw + '</small></p>' +
+				       '<p class="m-0 ml-3 bg-body-tertiary collapse collapse7">' +
+                                       '<small>' + behav_raw + '</small>' +
+                                       '</p>' +
 				       '</label>' +
 				       '</li>' ;
 		    }
@@ -103,7 +115,7 @@
 	        return   '<div id="bot_signal" class="carousel" data-ride="carousel" data-interval="false">' +
 			 '  <div class="carousel-inner" role="listbox">' +
 			 '    <div class="carousel-item active">' +
-			 '    <div id="scroller-signal" ' + 
+			 '    <div id="scroller-signal" ' +
                          '         style="max-height:70vh; width:inherit; overflow:auto; -webkit-overflow-scrolling:touch;">' +
 			 '         <form class="form-horizontal" style="white-space:wrap;">' +
 			 '         <input aria-label="value for ' + key     + '" id="ask_skey"  name="ask_skey"  type="hidden" value="' + key     + '" class="form-control input-md"> ' +
@@ -130,10 +142,10 @@
                 // open dialog
                 var dlg_obj = {
 			id:      'dlg_updatesignal',
-			title:   function() { 
+			title:   function() {
 				    return wepsim_update_signal_dialog_title(key) ;
 				 },
-			body:    function() { 
+			body:    function() {
 				    return wepsim_update_signal_dialog_body(key, signal_obj) ;
 				 },
 			value:   signal_obj.value,
@@ -149,13 +161,14 @@
 							if (typeof user_input == "undefined") {
 							   user_input = $("input[name='ask_svalue']").val();
 							}
+							user_input = parseInt(user_input) ;
 
 							wepsim_update_signal_with_value(key, user_input) ;
 							wsweb_dialogbox_close_updatesignal() ;
 						    }
 				    },
 				    close: {
-					label:      '<i class="fa fa-times mr-2"></i>' +
+					label:      '<i class="fa fa-times me-2"></i>' +
 						    '<span data-langkey="Close">Close</span>',
 					className:  'btn-primary btn-sm col col-md-3 float-right',
 					callback:   function() {
@@ -163,7 +176,7 @@
 						   }
 				    }
 		        },
-			onshow:  function() { 
+			onshow:  function() {
 				    // ui ajust
 				    if (typeof $(".dial").knob !== "undefined")
 				    {
@@ -175,7 +188,7 @@
 
 				    var bb = $('#dlg_updatesignal') ;
 				    bb.find(".modal-title").addClass("mx-auto") ;
-				    bb.find(".bootbox-close-button").addClass("mx-1") ;
+				    bb.find(".bootbox-close-button").addClass("mx-1 btn-close border-0") ;
 				    bb.modal('handleUpdate') ;
 
 				    // uicfg and events
@@ -241,13 +254,13 @@
             for (sig in simhw_sim_signals()) {
                  for (var sigorg in jit_fire_dep[sig]) {
                       tmp_edges.push({from: tmp_hash[sigorg],
-                                      to: tmp_hash[sig],
+                                      to:   tmp_hash[sig],
                                       arrows: 'to'}) ;
                 }
             }
 	    var jit_dep_edges = new vis.DataSet(tmp_edges) ;
 
-	    var jit_dep_container = document.getElementById('depgraph1') ;
+	    var jit_dep_container = document.getElementById('depgraph1c') ;
 	    var jit_dep_data    = { nodes: jit_dep_nodes,
                                     edges: jit_dep_edges } ;
 	    var jit_dep_options = { interaction: {hover:true},

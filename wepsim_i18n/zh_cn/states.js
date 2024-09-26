@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -19,9 +19,12 @@
  */
 
 
+    // Tranlation thanks to https://github.com/shiptux
+
     i18n.eltos.states.zh_cn = {
 
 		'States':					'状态',
+		'state':					'状态',
 		'Current':					'当前',
 		'Current State':				'当前状态',
 		'History':					'历史',
@@ -44,8 +47,8 @@
 		'Save to File':					'保存到文件',
 		'State(s) to checkpoint':			'国家到检查站',
 		'Record to checkpoint':				'记录到检查点',
-		'Browser cache':				'瀏覽器緩存',
-		'Session to be restore':			'會話要還原',
+		'Browser cache':				'浏览器缓存',
+		'Session to be restore':			'还原',
 
 		'_last_':					'_last_'
 

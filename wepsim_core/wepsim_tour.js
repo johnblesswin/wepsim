@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -23,20 +23,21 @@
     ws_info.tours = {} ;
 
     //  tour
-    var ws_tour = null ;
+    var ws_tour      = null ;
+    var ws_tour_name = "tour1" ;
 
     // tour API
-    function wepsim_newbie_tour ( )
+    function wepsim_newbie_tour ( tour_name )
     {
              // get newbie tour...
-             var newbie_tour1 = ws_info.tours.tour1 ;
+             var newbie_tour1 = ws_info.tours[tour_name] ;
              if (typeof newbie_tour1 === "undefined") {
 	         return ;
              }
 
 	     // setup lang
 	     var ws_idiom = get_cfg('ws_idiom') ;
-             wepsim_newbie_tour_setLang(ws_idiom) ;
+             wepsim_newbie_tour_setLang(tour_name, ws_idiom) ;
 
 	     // setup tour
              if (null == ws_tour) {
@@ -44,16 +45,16 @@
              }
 
 	     ws_tour.setOptions({
-                                steps:              newbie_tour1,
-				keyboardNavigation: true,
-				tooltipClass:       'tooltip-large',
-				showProgress:       true,
-				showStepNumbers:    true,
-				scrollToElement:    true,
-                                nextLabel:          i18n_get('gui', ws_idiom, 'Next'),
-                                prevLabel:          i18n_get('gui', ws_idiom, 'Prev.'),
-	                        overlayOpacity:     '0.2'
-                             }) ;
+                                  steps:              newbie_tour1,
+				  keyboardNavigation: true,
+				  tooltipClass:       'tooltip-large',
+				  showProgress:       true,
+				  showStepNumbers:    true,
+				  scrollToElement:    true,
+                                  nextLabel:          i18n_get('gui', ws_idiom, 'Next'),
+                                  prevLabel:          i18n_get('gui', ws_idiom, 'Prev.'),
+	                          overlayOpacity:     '0.2'
+                               }) ;
 
 	     ws_tour.onbeforechange(function () {
                                         newbie_tour1[this._currentStep].do_before() ;
@@ -72,22 +73,23 @@
 			                return true ;
 	                }) ;
 
+             ws_tour_name = tour_name ;
 	     ws_tour.start() ;
 
 	     // stats about ui
-             ga('send', 'event', 'ui', 'ui.tour', 'ui.tour.newbie');
+             simcore_ga('ui', 'ui.tour', 'ui.tour.newbie') ;
     }
 
-    function wepsim_newbie_tour_setLang ( lang )
+    function wepsim_newbie_tour_setLang ( tour_name, lang )
     {
              // get newbie tour...
-             var newbie_tour1 = ws_info.tours.tour1 ;
+             var newbie_tour1 = ws_info.tours[tour_name] ;
              if (typeof newbie_tour1 === "undefined") {
 	         return ;
              }
 
 	     var step = '' ;
-	     for (var i=0; i<newbie_tour1.length; i++) 
+	     for (var i=0; i<newbie_tour1.length; i++)
 	     {
 		  step = newbie_tour1[i].step ;
                   if ("" !== step) {
@@ -105,6 +107,6 @@
 	     // update interface
 	     i18n_update_tags('gui') ;
 
-	     wepsim_newbie_tour() ;
+	     wepsim_newbie_tour(ws_tour_name) ;
     }
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -34,22 +34,20 @@
              "Matrix":							"Matriz",
              "Memory access":						"Acceso a memoria",
              "SC 1, 4-5, 8, 11-12":					"SC 1, 4-5, 8, 11-12",
-             "strlen_2 + skipasciicode_2":				"strlen_2 + skipasciicode_2",
              "Subrutine":						"Subrutina",
              "syscall 1, 4-5, 8, 11-12":				"syscall 1, 4-5, 8, 11-12",
              "System call":						"Llamada a systema",
              "Threads":							"Hilos",
              "Vector":							"Vector",
 	     "Compiler Explorer":					"Compiler Explorer",
-
+	     "Instructive":		        	"<b>Instructivo</b>",
              "example_04_01":				"Ejemplo avanzado con interrupciones, llamada al sistema y excepciones.",
              "example_05_01":				"Extensiones Espec&iacute;ficas de Aplicaci&oacute;n: addv + seqv.",
              "example_05_03":				"Extensiones Espec&iacute;ficas de Aplicaci&oacute;n: madd + mmul + mxch.",
-             "example_05_02":				"Extensiones Espec&iacute;ficas de Aplicaci&oacute;n: strlen_2 + skipasciicode_2.",
-             "example_03_01":				"Ejemplo <b>Instructive</b> con excepci&oacute;n de coma flotante.",
-             "example_03_02":				"Ejemplo <b>Instructive</b> con interrupciones: fetch, RETI y .ktext/.kdata.",
-             "example_03_03":				"Ejemplo <b>Instructive</b> con llamada al sistema.",
-	     "example_03_04":				"Ejemplo <b>Instructive</b> con convenio simple de pila.",
+             "example_03_01":				"Ejemplo con excepci&oacute;n de coma flotante.",
+             "example_03_02":				"Ejemplo con interrupciones: fetch, RETI y .ktext/.kdata.",
+             "example_03_03":				"Ejemplo con llamada al sistema.",
+	     "example_03_04":				"Ejemplo con convenio simple de pila.",
              "example_04_04":				"Examplo de malloc + free.",
              "example_04_02":				"Examplo de llamada a sistema para imprimir/leer enteros y string.",
              "example_04_03":				"Examplo de hilos.",
@@ -72,6 +70,7 @@
              "Intermediate":				"Intermedio",
              "Laboratory":				"Laboratorio",
              "Operating Systems":			"Sistemas Operativos",
+	     "Extra":					"Bonus",
              "Special":					"Especial",
 
 	     "Load example":				"Cargar ejemplo",

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -24,19 +24,20 @@
          */
 
         /* jshint esversion: 6 */
-        class ws_console extends HTMLElement
+        class ws_console extends ws_uielto
         {
-	      constructor ()
-	      {
-		    // parent
-		    super();
-	      }
+              constructor ()
+              {
+                    // parent
+                    super();
+              }
 
-	      render ( msg_default )
+              // render
+	      render ( event_name )
 	      {
 		    // html holder
 		    var o1 = '<label class="my-0" for="kdb_con" style="min-width:95%">' +
-                             '  <i style="height:5vh; opacity:0.6;" ' + 
+                             '  <i style="height:5vh; opacity:0.6;" ' +
                              '     class="fas fa-desktop fa-2x mb-2"></i>' +
 			     '</label>' +
 			     '<textarea aria-label="monitor"' +
@@ -44,7 +45,7 @@
 			     '          placeholder="WepSIM" id="kdb_con" rows="8" readonly></textarea>' +
                              '' +
                              '<label class="my-0" for="kdb_key" style="min-width:95%">' +
-                             '  <i style="height:5vh; width:10vw; opacity:0.6;" ' + 
+                             '  <i style="height:5vh; opacity:0.6;" ' +
                              '     class="far fa-keyboard fa-2x mt-2 mb-1"></i>' +
                              '</label>' +
                              '<textarea aria-label="keyboard"' +
@@ -52,11 +53,6 @@
                              '          placeholder="WepSIM" id="kdb_key" rows="2"></textarea>' ;
 
 		    this.innerHTML = o1 ;
-	      }
-
-	      connectedCallback ()
-	      {
-		    this.render('') ;
 	      }
         }
 

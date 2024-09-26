@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -34,7 +34,7 @@
 	      }
 
               // render
-	      render ( )
+	      render ( event_name )
 	      {
                     // initialize render elements...
 	            super.render() ;
@@ -49,7 +49,7 @@
                     var o1  = '' ;
 
                     // build HTML
-		    o1 += "<div class='container text-right'>" + "</div>" +
+		    o1 += "<div class='container text-end'>" + "</div>" +
 		          "<div id='memory_segments' style='height:58vh; width:inherit;'></div>" ;
 
 		    this.innerHTML = o1 ;

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -24,7 +24,7 @@
          */
 
         /* jshint esversion: 6 */
-        class ws_dbg_mp extends HTMLElement
+        class ws_dbg_mp extends ws_uielto
         {
 	      constructor ()
 	      {
@@ -32,20 +32,23 @@
 		    super();
 	      }
 
-	      render ( msg_default )
+	      render ( event_name )
 	      {
 		    // html holder
 		    var o1 = "<center>" +
 		             "<div id='asm_table' style='overflow-x:auto; -webkit-overflow-scrolling:touch;'>" +
-		   	     "<table class='table ui-responsive ui-table' style='margin-bottom:0px; min-width:700px;'>" +
+		   	     "<table class='table table-hover table-table-striped' style='margin-bottom:0px; min-width:700px;'>" +
 		   	     "<thead>" +
-			     "<tr style='border-top:2pt solid white;'>" +
+			     "<tr>" +
 			     "<th width='1%'>" +
-			     "<a tabindex='0' href='#' class='show multi-collapse-3' data-toggle='popover2' id='popover2_asm'><strong class='fas fa-wrench text-secondary'></strong></a>" +
+			     "<a tabindex='0' href='#' class='multi-collapse-3 collapse show' " +
+                             "   data-bs-toggle='popover2' id='popover2_asm'>" +
+                             "<strong class='fas fa-wrench text-secondary'></strong>" +
+                             "</a>" +
 			     "</th>" +
                              "<th width='10%' class='asm_label collapse' align='right'><span data-langkey='labels'>labels</span></th>" +
-			     "<th width='15%' class='asm_addr  collapse'              ><span><span data-langkey='addr'>addr</span></span><span class='d-none d-sm-inline-flex'><span data-langkey='ess'>ess</span></span></th>" +
-                             "<th width='1%'  class='asm_addr  collapse' align='right'><span data-langkey='breakpoint'>breakpoint</span></th>" +
+			     "<th width='15%' class='asm_addr  collapse' align='center'><span><span data-langkey='addr'>addr</span></span><span class='d-none d-sm-inline-flex'><span data-langkey='ess'>ess</span></span></th>" +
+                             "<th width='1%'  class='asm_brk   collapse' align='right'><span data-langkey='breakpoint'>breakpoint</span></th>" +
                              "<th width='14%' class='asm_hex   collapse' align='right'><span data-langkey='content'>content</span></th>" +
                              "<th width='30%' class='asm_ins   collapse' align='left' ><span data-langkey='assembly'>assembly</span></th>" +
 			     "<th width='30%' class='asm_pins  collapse' align='left' ><span>pseudo</span><span class='d-none d-md-inline'><small><span data-langkey='instructions'>instructions</span></small></span></th>" +
@@ -62,11 +65,14 @@
 		             "</div>" ;
 
 		    this.innerHTML = o1 ;
-	      }
 
-	      connectedCallback ()
-	      {
-		    this.render('') ;
+		    // initialize loaded components
+                    wepsim_quickcfg_init('popover2') ;
+
+		    var target = $("#asm_table");
+		    $("#asm_debugger_container").scroll(function() {
+		       target.prop("scrollTop", this.scrollTop).prop("scrollLeft", this.scrollLeft);
+		    });
 	      }
         }
 
@@ -103,13 +109,10 @@
     	    {
                  var label_name = "SHOWCODE_"   + tlabel[tli] ;
                  var btn_show   = get_cfg(label_name) ;
-                 var btn_name   = "#asm_" + tlabel[tli] ;
 
-                 $(btn_name).removeClass('btn-outline-secondary').removeClass('btn-dark') ;
-    	         if (btn_show !== false)
-                      $(btn_name).addClass('btn-dark') ;
-    	         else $(btn_name).addClass('btn-outline-secondary') ;
+                 wepsim_config_button_pretoggle(label_name, 'C'+tli) ;
     	    }
+
         }
 
         // Content
@@ -117,11 +120,11 @@
         function default_asmdbg_content_horizontal_card ( index, datalangkey, content )
         {
     	    return "<div class='card m-3'>" +
-    		   "  <div class='row no-gutters'>" +
+    		   "  <div class='row g-0'>" +
     		   "  <div class='col-md-12'>" + // -
     		   "  <div class='card-body py-0'>" +
     		   "    <p class='card-text'>" +
-    		   "    <div class='badge badge-primary'>" + index + "</div>" +
+    		   "    <div class='badge bg-primary'>" + index + "</div>" +
     		   "    <span data-langkey='" + datalangkey + "'>" + content + "</span>" +
     		   "    </p>" +
     		   "  </div>" +
@@ -134,6 +137,7 @@
         {
     	    var wsi = get_cfg('ws_idiom') ;
 
+/*
     	    var o = "<br>" +
                     default_asmdbg_content_horizontal_card("1",
 					                   "simulator intro 1",
@@ -142,6 +146,15 @@
 					                   "simulator intro 2",
     	         					   i18n_get('gui', wsi, 'simulator intro 2') ) +
                     default_asmdbg_content_horizontal_card("3",
+					                   "simulator intro 3",
+    	         					   i18n_get('gui', wsi, 'simulator intro 3') ) ;
+*/
+
+    	    var o = "<br>" +
+                    default_asmdbg_content_horizontal_card("1",
+					                   "simulator intro 2",
+    	         					   i18n_get('gui', wsi, 'simulator intro 2') ) +
+                    default_asmdbg_content_horizontal_card("2",
 					                   "simulator intro 3",
     	         					   i18n_get('gui', wsi, 'simulator intro 3') ) ;
 
@@ -153,7 +166,7 @@
     	  return "<div class='card m-2 col-sm'>" +
     		 "  <div class='card-body h-50 py-0'>" +
     		 "    <p class='card-text'>" +
-    		 "    <div class='badge badge-primary'>" + index + "</div>" +
+    		 "    <div class='badge bg-primary'>" + index + "</div>" +
     		 "    <span data-langkey='" + datalangkey + "'>" + content + "</span>" +
     		 "    </p>" +
     		 "  </div>" +
@@ -185,20 +198,28 @@
 	function assembly2html ( mp, labels, seg )
 	{
 		var l = "" ;
+                var an = 0 ;
+                var as = "" ;
 
-                // prepare hashtable...
+                // prepare hashtable for address to labels...
                 var a2l = {} ;
                 for (l in labels)
 		{
-                     if (typeof a2l[labels[l]] == "undefined") {
-                         a2l[labels[l]] = [] ;
+                     an = parseInt(labels[l]) ;
+                     an = an - (an % WORD_BYTES) ;
+                     as = "0x" + an.toString(16) ;
+
+                     if (typeof a2l[as] == "undefined") {
+                         a2l[as] = [] ;
 		     }
-                     a2l[labels[l]].push(l);
+                     a2l[as].push(l);
                 }
 
+                // prepare hashtable for address to segments...
                 var a2s = {} ;
                 for (l in seg)
 		{
+                     if (".binary" == l) continue ;
                      laddr = "0x" + seg[l].begin.toString(16) ;
                      a2s[laddr] = l;
                 }
@@ -214,7 +235,7 @@
 		var s_label = "" ;
 
                 var o = "<center>" +
-                        "<table data-role='table' class='table table-sm'>" +
+                        "<table data-role='table' class='table table-sm table-striped table-hover'>" +
                         "<tbody>" ;
                 for (l in mp)
                 {
@@ -222,11 +243,6 @@
 	             a = parseInt(l) ;
 	             p = "0x" + a.toString(16) ;
 		     s3_val = get_value(mp[l]) ;
-
-                     // set cell bgcolor
-	             if  (a % 8 === 0)
-		          mp[l].bgcolor = "#F8F8F8" ;
-	             else mp[l].bgcolor = "#F0F0F0" ;
 
                      // <skip data segments>
                   // if (false == mp[l].is_assembly) {
@@ -236,7 +252,7 @@
 
                      // several data values repeated -> '...'
                      if (
-                          (old_s3_val == s3_val) && 
+                          (old_s3_val == s3_val) &&
                           (false == mp[l].is_assembly) &&
                           (typeof a2l[p] == 'undefined')
                      )
@@ -247,9 +263,9 @@
 
                      if (n_ellipsis > 0)
                      {
-                         o_tde = "<td class='text-monospace col-auto pb-0' " +
+                         o_tde = "<td class='font-monospace col-auto pb-0' " +
                                  "    style='line-height:0.9;' align='left'></td>" ;
-                         o_tdf = "<td class='text-monospace col-auto pb-0' " +
+                         o_tdf = "<td class='font-monospace col-auto pb-0' " +
                                  "    style='line-height:0.9;' align='left'>" +
                                  "&vellip;&vellip; &times;" + n_ellipsis + "</td>" ;
                          o += "<tr>" + o_tde + o_tdf + o_tde + o_tdf + o_tde + o_tde + o_tdf + "</tr>" ;
@@ -262,15 +278,17 @@
 		     if (typeof a2l[p] != "undefined")
 		     {
 			 for (var i=0; i<a2l[p].length; i++) {
-			      s_label = s_label + "<span class='badge badge-info'>" + a2l[p][i] + "</span>" ;
+			      s_label = s_label + "<span class='badge bg-info mx-1'>" + a2l[p][i] + "</span>" ;
 			 }
 		     }
 
 		     // join the pieces...
 		     if (typeof a2s[p] !== "undefined")
 		     {
-			 o += "<tr bgcolor='#FEFEFE'>" +
-			      "<td colspan='7' style='line-height:0.3;' align='left'><small><font color='gray'>" + a2s[p] + "</font></small></td>" +
+			 o += "<tr>" +
+			      "<td class='sticky-top bg-body' colspan='7' align='left' style='line-height:0.3;'>" +
+                              "<small><font color='gray'>" + a2s[p] + "</font></small>" +
+                              "</td>" +
 			      "</tr>" ;
 		     }
 
@@ -296,27 +314,27 @@
 	     var p        = "0x" + parseInt(l).toString(16) ;
 
 	     // join the pieces...
-	     var o = "<tr id='asmdbg" + p + "' bgcolor='" + mp[l].bgcolor + "'>" +
-		     "<td class='asm_label  text-monospace col-auto collapse pb-0' " +
+	     var o = "<tr id='asmdbg" + p + "'>" +
+		     "<td class='asm_label  font-monospace col-2 collapse pb-0' " +
 		     "    style='line-height:0.9;' align='right'>" + s_label +
 		     "</td>" +
-		     "<td class='asm_addr   text-monospace col-auto collapse' " +
-		     "    style='line-height:0.9;'>" + p +
+		     "<td class='asm_addr   font-monospace col-auto collapse' " +
+		     "    style='line-height:0.9;' align='center'>" + p +
 		     "</td>" +
-		     "<td class='asm_break  text-monospace col-auto show p-0' " +
+		     "<td class='asm_break  font-monospace col-auto show p-0' " +
 		     "    style='line-height:0.9;' id='bp" + p + "' width='1%'>" +
 		     "</td>" +
-		     "<td class='asm_hex    text-monospace col-auto collapse text-secondary' " +
+		     "<td class='asm_hex    font-monospace col-auto collapse text-secondary' " +
 		     "    style='line-height:0.9; width:13%' align='center'>" + s4_hex +
 		     "</td>" +
-		     "<td class='asm_dets   text-monospace col-auto show p-0' " +
+		     "<td class='asm_dets   font-monospace col-auto show p-0' " +
 		     "    style='line-height:0.9;' width='1%' align='left'>" +
 		     "</td>" +
-		     "<td class='asm_ins    text-monospace col-auto collapse text-secondary' " +
+		     "<td class='asm_ins    font-monospace col-auto collapse text-secondary' " +
 		     "    style='line-height:0.9;'>" + s2_instr +
 		     "</td>" +
-		     "<td class='asm_pins   text-monospace col-auto collapse text-secondary' " +
-		     "    style='line-height:0.9;' align='left'>" + s2_instr + 
+		     "<td class='asm_pins   font-monospace col-auto collapse text-secondary' " +
+		     "    style='line-height:0.9;' align='left'>" + s2_instr +
 		     "</td>" +
 		     "</tr>" ;
 
@@ -335,7 +353,8 @@
 
 	     // mark pseudo + n-words
 	     if (s1_instr === '') {
-		 s2_instr = '<span class="text-secondary">' + s2_instr + '</span>' ;
+	           s1_instr = '<span class="text-secondary text-center">&quot;<sub>' + s2_instr + '</sub></span>' ;
+	           s2_instr = '<span class="text-secondary text-center">&quot;<sub>' + s2_instr + '</sub></span>' ;
 	     }
 	else if (s1_instr != s2_instr) {
 		 s1_instr = '<span class="text-primary">' + s1_instr + '</span>' ;
@@ -347,32 +366,32 @@
 
 	     // join the pieces...
              var o = '' ;
-	     o +=  "<tr id='asmdbg" + p + "' bgcolor='" + mp[l].bgcolor + "'>" +
-		   "<td class='asm_label  text-monospace col-auto collapse pb-0' " +
+	     o +=  "<tr id='asmdbg" + p + "'>" +
+		   "<td class='asm_label  font-monospace col-auto collapse pb-0' " +
 		   "    style='line-height:0.9;' align='right' " + oclk + ">" + s_label +
 		   "</td>" +
-		   "<td class='asm_addr   text-monospace col-auto collapse' " +
-		   "    style='line-height:0.9;' " + oclk + ">" + p +
+		   "<td class='asm_addr   font-monospace col-auto collapse' " +
+		   "    style='line-height:0.9;' align='center' " + oclk + ">" + p +
 		   "</td>" +
-		   "<td class='asm_break  text-monospace col-auto show p-0' " +
+		   "<td class='asm_break  font-monospace col-auto show p-0' " +
 		   "    style='line-height:0.9;' id='bp" + p + "' width='1%' " + oclk + ">" +
-	           "<span data-toggle='tooltip' rel='tooltip1' title='click to toggle breakpoint'>.</span>" +
+	           "<span data-bs-toggle='tooltip' rel='tooltip1' title='click to toggle breakpoint'>.</span>" +
 		   "</td>" +
-		   "<td class='asm_hex    text-monospace col-auto collapse' " +
+		   "<td class='asm_hex    font-monospace col-auto collapse' " +
 		   "    style='line-height:0.9; width:13%' align='center' " + oclk + ">" + s4_hex +
 		   "</td>" +
-		   "<td class='asm_dets   text-monospace col-auto show p-0' " +
+		   "<td class='asm_dets   font-monospace col-auto show p-0' " +
 		   "    style='line-height:0.9;' width='1%' align='left'>" +
-	           "<span data-toggle='tooltip' rel='tooltip2' data-placement='right' " +
-		   "      data-html='true' data-l='" + l + "'>" +
-		   "<span data-toggle='tooltip' rel='tooltip1' data-placement='right' " +
+	           "<span data-bs-toggle='tooltip' rel='tooltip2' data-bs-placement='right' " +
+		   "      data-bs-html='true' data-l='" + l + "'>" +
+		   "<span data-bs-toggle='tooltip' rel='tooltip1' data-bs-placement='right' " +
 		   "      title='click to show instruction format details'>&nbsp;.&nbsp;</span>" +
 		   "</span>" +
 		   "</td>" +
-		   "<td class='asm_ins    text-monospace col-auto collapse' " +
+		   "<td class='asm_ins    font-monospace col-auto collapse' " +
 		   "    style='line-height:0.9;' " + oclk + ">" + s1_instr +
 		   "</td>" +
-		   "<td class='asm_pins   text-monospace col-auto collapse' " +
+		   "<td class='asm_pins   font-monospace col-auto collapse' " +
 		   "    style='line-height:0.9;' align='left' " + oclk + ">" + s2_instr +
 		   "</td>" +
 		   "</tr>" ;
@@ -382,7 +401,7 @@
 
         // Popovers
 
-        function wepsim_click_asm_columns ( name )
+        function wepsim_click_asm_columns ( name, lbl_id )
         {
             var label_name = "SHOWCODE_" + name ;
             var show_elto  = get_cfg(label_name) ;
@@ -394,47 +413,134 @@
        	         $(column_name).show() ;
             else $(column_name).hide() ;
 
-    	set_cfg(label_name, show_elto) ;
-    	save_cfg() ;
-
-            var btn_name = "#asm_" + name ;
-    	    $(btn_name).removeClass('btn-outline-secondary').removeClass('btn-dark') ;
-            if (show_elto !== false)
-    	         $(btn_name).addClass('btn-dark') ;
-    	    else $(btn_name).addClass('btn-outline-secondary') ;
+	    wepsim_config_button_toggle(label_name, show_elto, lbl_id) ;
         }
 
         function wepsim_show_asm_columns_checked ( asm_po )
         {
     	     var wsi = get_cfg('ws_idiom') ;
 
-             var o = '<button type="button" id="asm_label" aria-label="Show label" ' +
-    		 '        onclick="wepsim_click_asm_columns(\'label\'); return false;" ' +
-    		 '        class="btn btn-sm btn-block btn-outline-secondary mb-1">' +
-    		 '<span class="float-left">' + i18n_get('dialogs', wsi, 'Show/Hide labels') + '</span>' +
-    		 '</button>' +
-    		 '<button type="button" id="asm_hex" aria-label="Show content" ' +
-    		 '        onclick="wepsim_click_asm_columns(\'hex\'); return false;" ' +
-                     '        class="btn btn-sm btn-block btn-outline-secondary mb-1">' +
-    		 '<span class="float-left">' + i18n_get('dialogs', wsi, 'Show/Hide content') + '</span>' +
-    		 '</button>' +
-    		 '<button type="button" id="asm_ins" aria-label="Show instruction" ' +
-    		 '        onclick="wepsim_click_asm_columns(\'ins\'); return false;" ' +
-                     '        class="btn btn-sm btn-block btn-outline-secondary mb-1">' +
-    		 '<span class="float-left">' + i18n_get('dialogs', wsi, 'Show/Hide assembly') + '</span>' +
-    		 '</button>' +
-    		 '<button type="button" id="asm_pins" aria-label="Show pseudoinstruction" ' +
-    		 '        onclick="wepsim_click_asm_columns(\'pins\'); return false;" ' +
-                     '        class="btn btn-sm btn-block btn-outline-secondary mb-1">' +
-    		 '<span class="float-left">' + i18n_get('dialogs', wsi, 'Show/Hide pseudo-instructions') + '</span>' +
-    		 '</button>' +
+             var o = '<span class="d-grid gap-2 p-1">' +
+                     // <labels>
+                     quickcfg_html_header(i18n_get('dialogs', wsi, 'Show labels')) +
+		     quickcfg_html_onoff('C0',
+					 i18n_get('dialogs', wsi, 'Show/Hide labels'),
+                                                  i18n_get_TagFor('cfg', 'Off'),
+					 "wepsim_click_asm_columns(\'label\',\'C0\'); return false;",
+                                         "(*) " + i18n_get_TagFor('cfg', 'On'),
+					 "wepsim_click_asm_columns(\'label\',\'C0\'); return false;") +
+                     // <content>
+                     quickcfg_html_header(i18n_get('dialogs', wsi, 'Show content')) +
+		     quickcfg_html_onoff('C2',
+					 i18n_get('dialogs', wsi, 'Show/Hide content'),
+                                                  i18n_get_TagFor('cfg', 'Off'),
+					 "wepsim_click_asm_columns(\'hex\',\'C2\'); return false;",
+                                         "(*) " + i18n_get_TagFor('cfg', 'On'),
+					 "wepsim_click_asm_columns(\'hex\',\'C2\'); return false;") +
+                     // <assembly>
+                     quickcfg_html_header(i18n_get('dialogs', wsi, 'Show assembly')) +
+		     quickcfg_html_onoff('C3',
+					 i18n_get('dialogs', wsi, 'Show/Hide instruction'),
+                                                  i18n_get_TagFor('cfg', 'Off'),
+					 "wepsim_click_asm_columns(\'ins\',\'C3\'); return false;",
+                                         "(*) " + i18n_get_TagFor('cfg', 'On'),
+					 "wepsim_click_asm_columns(\'ins\',\'C3\'); return false;") +
+                     // <pseudo-instructions>
+                     quickcfg_html_header(i18n_get('dialogs', wsi, 'Show pseudo-instructions')) +
+		     quickcfg_html_onoff('C4',
+					 i18n_get('dialogs', wsi, 'Show/Hide pseudo-instructions'),
+                                                  i18n_get_TagFor('cfg', 'Off'),
+					 "wepsim_click_asm_columns(\'pins\',\'C4\'); return false;",
+                                         "(*) " + i18n_get_TagFor('cfg', 'On'),
+					 "wepsim_click_asm_columns(\'pins\',\'C4\'); return false;") +
+                     // <close>
                      '<button type="button" id="close" data-role="none" ' +
-                     '        class="btn btn-sm btn-danger w-100 p-0 mt-2" ' +
-                     '        onclick="$(\'#' + asm_po + '\').popover(\'hide\');">' +
-    		          i18n_get('dialogs', wsi, 'Close') +
-    		 '</button>' ;
+                     '        class="btn btn-sm btn-danger w-100 p-0 mt-3" ' +
+                     '        onclick="wepsim_popovers_hide('+asm_po+');">' + i18n_get('dialogs', wsi, 'Close') +
+    		 '</button>' +
+                 '</span>' ;
 
              return o ;
+        }
+
+	function instruction_oceoc2html ( firm_reference )
+	{
+	   var u_oc_eoc = '' ;
+
+	   if (typeof firm_reference.co !== 'undefined')
+	   { // firmware v1
+	       u_oc_eoc += firm_reference.co ;
+	   }
+	   else if (typeof firm_reference.oc !== 'undefined')
+	   {
+	       if (typeof firm_reference.oc.value !== 'undefined')
+	            u_oc_eoc += firm_reference.oc.value ; // firmware v2
+	       else u_oc_eoc += firm_reference.oc ;       // firmware v1
+	   }
+	   else if (typeof firm_reference.op !== 'undefined') {
+	       u_oc_eoc += firm_reference.op ;
+	   }
+
+	   if (typeof firm_reference.cop !== 'undefined')
+	   {
+	       if (firm_reference.cop !== '')
+	           u_oc_eoc += '+' + firm_reference.cop ;
+	   }
+	   else if (typeof firm_reference.eoc !== 'undefined')
+	   {
+	       if (typeof firm_reference.eoc.value !== 'undefined') {
+	           if (firm_reference.eoc.value !== '')
+	               u_oc_eoc += '+' + firm_reference.eoc.value ; // firmware v2
+               }
+               else {
+	           if (firm_reference.eoc !== '')
+	               u_oc_eoc += '+' + firm_reference.eoc ;       // firmware v1
+               }
+	   }
+
+	   return ' <li>' + firm_reference.name + ': <b>' + u_oc_eoc + '</b></li>\n' ;
+        }
+
+	function instruction_fields2html ( firm_reference )
+	{
+           var o = '' ;
+
+	   var fields = firm_reference.fields ;
+           if (0 == fields.length) {
+               return o ;
+           }
+
+	   if (typeof fields[0].asm_start_bit !== 'undefined')
+	   { // firmware v2 - assembler-ng
+	       for (var f=0; f<fields.length; f++)
+               {
+	            o += ' <li>' + fields[f].name                     + ': bits <b>' +
+                                   fields[f].asm_stop_bit.toString()  + '</b> to <b>' +
+                                   fields[f].asm_start_bit.toString() + '</b></li>\n' ;
+	       }
+           }
+
+	   else if (typeof fields[0].bits_start !== 'undefined')
+	   { // firmware v2 - assembler-v1
+	       for (var f=0; f<fields.length; f++)
+               {
+	            o += ' <li>' + fields[f].name                  + ': bits <b>' +
+                                   fields[f].bits_stop.toString()  + '</b> to <b>' +
+                                   fields[f].bits_start.toString() + '</b></li>\n' ;
+	       }
+           }
+
+           else
+	   { // firmware v1
+	       for (var f=0; f<fields.length; f++)
+               {
+	            o += ' <li>' + fields[f].name     + ': bits <b>' +
+                                   fields[f].stopbit  + '</b> to <b>' +
+                                   fields[f].startbit + '</b></li>\n' ;
+	       }
+           }
+
+           return o ;
         }
 
 	function instruction2tooltip ( mp, l )
@@ -442,14 +548,15 @@
     	   var wsi = get_cfg('ws_idiom') ;
 
            // prepare data: ins_quoted + firmware_reference
-	   var ins_quoted     = main_memory_getsrc(mp, l) ;
+	   var ins_quoted     = main_memory_getsrcbin(mp, l) ;
 	       ins_quoted     = ins_quoted.replace(/"/g, '&quot;').replace(/'/g, '&apos;') ;
 	   var firm_reference = mp[l].firm_reference ;
 	   var nwords         = parseInt(mp[l].firm_reference.nwords) ;
 
            // prepare data: ins_bin
 	   var next = 0 ;
-           var ins_bin = mp[l].binary ;
+         //var ins_bin = mp[l].binary ;
+	   var ins_bin = parseInt(get_value(mp[l])).toString(2).padStart(32, "0") ;
 	   for (var iw=1; iw<nwords; iw++)
 	   {
 		  next = parseInt(l, 16) + iw*4 ; // 4 -> 32 bits
@@ -462,28 +569,20 @@
 	   var o  = '<div class=\"text-center p-1 m-1 border border-secondary rounded\">\n' +
 		    ins_quoted  + '<br>\n' +
 		    '</div>' +
-	       	    '<div class=\"text-left p-1 m-1\">\n' +
+	       	    '<div class=\"text-start p-1 m-1\">\n' +
 		    '<b>' + ins_bin + '</b>\n' +
 		    '</div>' ;
 
-	   // details: co, cop & fields
-	   var u = '' ;
-	   if (typeof    firm_reference.cop !== 'undefined') {
-	       u = '+' + firm_reference.cop ;
-	   }
-
-	   o +=	'<div class=\"text-left px-2 my-1\">\n' +
+	   // details: co+cop & fields
+	   o +=	'<div class=\"text-start px-2 my-1\">\n' +
 	       	'<span class=\"square\">Format:</span>\n' +
 	        '<ul class=\"mb-0\">\n' +
-		' <li>' + firm_reference.name + ': <b>' + firm_reference.co + u + '</b></li>\n' ;
-	   var fields = firm_reference.fields ;
-	   for (var f=0; f<fields.length; f++) {
-	        o += ' <li>' + fields[f].name + ': bits <b>' + fields[f].stopbit + '</b> to <b>' + fields[f].startbit + '</b></li>\n' ;
-	   }
-	   o += '</ul>\n' ;
+	        instruction_oceoc2html(firm_reference) +
+	        instruction_fields2html(firm_reference) +
+	        '</ul>\n' ;
 
 	   // details: microcode
-	   o += '<span class=\"user_microcode\">' + '<span class=\"square\">Microcode:</span>\n' +
+	   o += '<span class=\"wsx_microcode\">' + '<span class=\"square\">Microcode:</span>\n' +
 	        '<ul class=\"mb-0\">\n' +
 	  	' <li> starts: <b>0x'     + firm_reference['mc-start'].toString(16) + '</b></li>\n' +
 		' <li> clock cycles: <b>' + firm_reference.microcode.length + '</b></li>\n' +
@@ -494,7 +593,7 @@
            if ('' != firm_reference.help.trim())
            {
 	       o += '<span class=\"square\">Help:</span>\n' +
-	            '<div class=\"ml-3\">\n' +
+	            '<div class=\"ms-3\">\n' +
 		    firm_reference.help + '\n' +
 	            '</div>\n' +
                     '</span>' ;
@@ -504,7 +603,7 @@
 	   o += '</div>' ;
            o += '<button type=\"button\" id=\"close\" data-role=\"none\" ' +
                 '        class=\"btn btn-sm btn-danger w-100 p-0 mt-2\" ' +
-                '        onclick=$(\".tooltip\").tooltip("hide");>' +
+                '        onclick=wepsim_tooltips_closeAll();return false;>' +
     		         i18n_get('dialogs', wsi, 'Close') +
     		'</button>' ;
 
@@ -562,23 +661,23 @@
                 var p = null ;
                 if (typeof curr_mp[old_addr] !== "undefined")
                 {
-                     o1 = $("#asmdbg" + old_addr_hex) ;
-                     o1.css('background-color', curr_mp[old_addr].bgcolor) ;
+                       o1 = $("#asmdbg" + old_addr_hex + " td") ;
+                       o1.removeClass('bg-debug-asm') ;
                 }
                 else
                 {
                      for (var l in curr_mp)
                      {
                           p  = "0x" + l.toString(16) ;
-                          o1 = $("#asmdbg" + p) ;
-                          o1.css('background-color', curr_mp[l].bgcolor) ;
+                          o1 = $("#asmdbg" + p + " td") ;
+                          o1.removeClass('bg-debug-asm') ;
                      }
                 }
                 old_addr = reg_pc ;
 
                 // try to set the current asmdbg_pc
-                o1 = $("#asmdbg" + curr_addr_hex) ;
-                o1.css('background-color', '#00EE88') ;
+                o1 = $("#asmdbg" + curr_addr_hex + " td") ;
+                o1.addClass('bg-debug-asm') ;
 
                 // check if current asmdbg_pc is available
                 if (typeof o1 === "undefined") {
@@ -632,7 +731,7 @@
                 $("span[rel='tooltip1']").tooltip('hide') ;
 
                 var o1       = document.getElementById("bp" + hexaddr) ;
-                o1.innerHTML = "<span data-toggle='tooltip' rel='tooltip1' title='click to toggle breakpoint'>" +
+                o1.innerHTML = "<span data-bs-toggle='tooltip' rel='tooltip1' title='click to toggle breakpoint'>" +
 			       inner_elto +
 			       "</span>" ;
 
@@ -704,9 +803,9 @@
                     $("span[rel='tooltip2']").tooltip({
                             trigger:   'click',
                             html:       true,
-                            title:      function() {
+                            title:      function(obj) {
                                            $("span[rel='tooltip1']").tooltip('hide') ;
-				           var l = this.getAttribute('data-l') ;
+				           var l = $(obj).attr('data-l') ;
                                            var curr_mp = simhw_internalState('MP') ;
                                            return instruction2tooltip(curr_mp, l) ;
                                         },
@@ -729,7 +828,7 @@
 
             var asmdbg_content = default_asmdbg_content_horizontal() ;
 	    if (Object.keys(curr_mp).length !== 0) {
-		 asmdbg_content = assembly2html(curr_mp, SIMWARE.labels2, SIMWARE.seg) ;
+		 asmdbg_content = assembly2html(curr_mp, SIMWARE.labels_asm, SIMWARE.seg) ;
 	    }
 
 	    asmdbg_loadContent(asmdbg_content) ;

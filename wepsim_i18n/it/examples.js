@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -35,21 +35,20 @@
 		'Matrix':			'Matrice',
 		'Memory access':		'Accesso alla memoria',
 		'SC 1, 4-5, 8, 11-12':		'SC 1, 4-5, 8, 11-12',
-		'strlen_2 + skipasciicode_2':	'strlen_2 + skipasciicode_2',
 		'Subrutine':			'Sottoprogramma',
 		'syscall 1, 4-5, 8, 11-12':	'syscall 1, 4-5, 8, 11-12',
 		'System call':			'Chiamata di sistema',
 		'Threads':			'Filo',
 		'Vector':			'Vettore',
 	        "Compiler Explorer":		"Compiler Explorer",
+		"Instructive":		        "<b>Istruttivo</b>",
 		'example_04_01':		'Esempio avanzato con interruzione, chiamata di sistema ed eccezione.',
 		'example_05_01':		'Estensione specifica dell\'applicazione: addv + seqv.',
 		'example_05_03':		'Estensione specifica dell\'applicazione: madd + mmul + mxch.',
-		'example_05_02':		'Estensione specifica dell\'applicazione: strlen_2 + skipasciicode_2.',
-		'example_03_01':		'Esempio <b>istruttivo</b> con eccezione in virgola mobile.',
-		'example_03_02':		'Esempio <b>istruttivo</b> con supporto per interruzioni: fetch, RETI e .ktext/.kdata.',
-		'example_03_03':		'Esempio <b>istruttivo</b> con supporto per le chiamate di sistema.',
-	        'example_03_04':		'Esempio <b>istruttivo</b> con una semplice convenzione di stack.',
+		'example_03_01':		'Esempio con eccezione in virgola mobile.',
+		'example_03_02':		'Esempio con supporto per interruzioni: fetch, RETI e .ktext/.kdata.',
+		'example_03_03':		'Esempio con supporto per le chiamate di sistema.',
+	        'example_03_04':		'Esempio con una semplice convenzione di stack.',
 		'example_04_04':		'Esempio di malloc + gratuito.',
 		'example_04_02':		'Esempio di syscall per la stampa/lettura di interi e stringhe.',
 		'example_04_03':		'Esempio di thread.',
@@ -71,6 +70,7 @@
 		'Intermediate':			'Intermedio',
 		'Laboratory':			'Laboratorio',
 		'Operating Systems':		'Sistemi operativi',
+		'Extra':			'Bonus',
 		'Special':			'Speciale',
 
 		'Load example':			'Carica esempio',

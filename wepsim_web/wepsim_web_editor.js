@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -56,8 +56,70 @@
             }
     }
 
+    function sim_cm_get_firmcfg ( )
+    {
+	    return {
+			value: "\n\n\n\n\n\n\n\n\n\n\n\n",
+			lineNumbers: true,
+			lineWrapping: true,
+			matchBrackets: true,
+			tabSize: 2,
+			foldGutter: {
+			   rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.brace, CodeMirror.fold.comment)
+			},
+			gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+			mode: "text/javascript"
+		   } ;
+    }
+
+    function sim_cm_get_asmcfg ( )
+    {
+	    return {
+			value: "\n\n\n\n\n\n\n\n\n\n\n\n",
+			lineNumbers: true,
+			lineWrapping: true,
+			matchBrackets: true,
+			tabSize: 2,
+			extraKeys: {
+			  "Ctrl-Space": function(cm) {
+			      CodeMirror.showHint(cm, function(cm, options) {
+				      var simware = get_simware();
+				      var cur = cm.getCursor();
+				      var result = [];
+				      for (var i=0; i<simware.firmware.length; i++) {
+					   if (simware.firmware[i].name != "begin") {
+						result.push(simware.firmware[i].signatureUser) ;
+					   }
+				      }
+				      return { list: result, from: cur, to: cur } ;
+			      });
+			  },
+			  "Ctrl-/": function(cm) {
+			      cm.execCommand('toggleComment');
+			  }
+			},
+			mode: "gas"
+		   } ;
+    }
+
     function sim_init_editor ( editor_id, editor_cfg )
     {
+/*
+            var view = new EditorView({
+			      doc: "\n\n\n\n\n\n\n\n\n\n",
+			      extensions: [
+				 basicSetup,
+				 history(),
+				 keymap.of([...defaultKeymap, ...historyKeymap]),
+				 javascript(),
+				 syntaxHighlighting(defaultHighlightStyle),
+			      ],
+			      parent: document.getElementById(editor_id)
+			   }) ;
+
+            return view ;
+*/
+
 	    var editor_obj = CodeMirror.fromTextArea(document.getElementById(editor_id), editor_cfg) ;
 
             // default values
@@ -69,14 +131,16 @@
             editor_obj.setSize("auto","auto");
             editor_obj.refresh();
 
-            // event onChange
-	    editor_obj.is_modified = true ;
-	    editor_obj.is_compiled = false ;
+            // event onChange -> update is_* attributes
+	    editor_obj.is_modified  = true ;
+	    editor_obj.is_compiled  = false ;
+	    editor_obj.is_refreshed = false ;
 
             editor_obj.on("change",
                           function (cmi, change) {
-                             cmi.is_modified = true ;
-                             cmi.is_compiled = false ;
+                             cmi.is_modified  = true ;
+                             cmi.is_compiled  = false ;
+                             cmi.is_refreshed = false ;
                           }) ;
 
             // return object
@@ -94,8 +158,8 @@
     {
          editor.setCursor({ line: pos-1, ch: 0 }) ;
          var marked = editor.addLineClass(pos-1, 'background', 'CodeMirror-selected') ;
-         setTimeout(function(){ 
-			editor.removeLineClass(marked, 'background', 'CodeMirror-selected'); 
+         setTimeout(function(){
+			editor.removeLineClass(marked, 'background', 'CodeMirror-selected');
                     }, 3000) ;
 
    	 var t = editor.charCoords({line: pos, ch: 0}, 'local').top ;
@@ -130,7 +194,7 @@
     function wepsim_get_binary_code ( )
     {
          // compile if needed
-	 if (false == inputasm.is_compiled) 
+	 if (false == inputasm.is_compiled)
          {
 	     var textToCompile = inputasm.getValue() ;
 	     var ok = wepsim_compile_assembly(textToCompile) ;

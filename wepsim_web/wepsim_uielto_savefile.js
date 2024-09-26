@@ -1,5 +1,5 @@
-/*    
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+/*
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -26,7 +26,7 @@
         /* jshint esversion: 6 */
         class ws_save_file extends HTMLElement
         {
-              static get observedAttributes() 
+              static get observedAttributes()
 	      {
 	            return [ 'fid', 'jsave', 'jshare' ] ;
 	      }
@@ -55,7 +55,7 @@
                         this.setAttribute('jshare', '') ;
 	      }
 
-	      render ( elto )
+	      render ( event_name )
 	      {
                     // update attributes
                     this.update_internal_attributes() ;
@@ -66,17 +66,17 @@
 			  "<div class='card-header border-secondary text-white bg-secondary p-1'>" +
 			  " <h5 class='m-0'>" +
 			  " <span class='text-white bg-secondary' data-langkey='Output'>Output</span>" +
-			  " <button class='btn btn-light mx-1 float-right py-0 col-auto' " +
+			  " <button class='btn bg-body-tertiary mx-1 float-end py-0 col-auto' " +
                           "         onclick='" + this.jsave + "'><span data-langkey='Save'>Save</span></button>" +
-			  " <button class='btn btn-light mx-1 float-right py-0 col-auto' " +
-                          "         onclick='" + this.jshare + "'><span data-langkey='Share'>Share</span></button>" +
+		       // " <button class='btn bg-body-tertiary mx-1 float-end py-0 col-auto' " +
+                       // "         onclick='" + this.jshare + "'><span data-langkey='Share'>Share</span></button>" +
 			  " </h5>" +
 			  "</div>" +
 			  "<div class='card-body'>" +
 			  " <label for='" + this.fid + "' class='collapse7'><em><span data-langkey='Please write the file name'>Please write the file name</span>:</em></label>" +
 	                  " <p><input aria-label='filename to save content' id='" + this.fid + "' " +
-                          "           class='form-control btn-outline-dark' " +
-                          "           placeholder='File name where information will be saved' " + 
+                          "           class='form-control btn-outline-secondary' " +
+                          "           placeholder='File name where information will be saved' " +
                           "           style='min-width: 90%;'/></p>" +
 			  "</div>" +
 			  "</div>" ;
@@ -86,12 +86,12 @@
 
 	      connectedCallback ()
 	      {
-		    this.render(this) ;
+		    this.render('connectedCallback') ;
 	      }
 
 	      attributeChangedCallback (name, oldValue, newValue)
 	      {
-		    this.render(this) ;
+		    this.render('attributeChangedCallback') ;
 	      }
 
 	      get fid ( )

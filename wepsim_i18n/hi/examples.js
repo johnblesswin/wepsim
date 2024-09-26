@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -35,17 +35,16 @@
 		'Matrix':		'मैट्रिक्स',
 		'Memory access':		'मेमोरी एक्सेस',
 		'SC 1, 4-5, 8, 11-12':		'एससी 1, 4-5, 8, 11-12',
-		'strlen_2 + skipasciicode_2':		'strlen_2 + Skipasciicode_2',
 		'Subrutine':		'सबरूटीन',
 		'syscall 1, 4-5, 8, 11-12':		'syscall 1, 4-5, 8, 11-12',
 		'System call':		'सिस्टम कॉल',
 		'Threads':		'धागे',
 		'Vector':		'वेक्टर',
-	        "Compiler Explorer":				"Compiler Explorer",
+	        "Compiler Explorer":		"Compiler Explorer",
+		'Instructive':		        '<b>शिक्षाप्रद</b>',
 		'example_04_01':		'रुकावट, सिस्टम कॉल और अपवाद के साथ उन्नत उदाहरण।',
 		'example_05_01':		'एप्लिकेशन-विशिष्ट एक्सटेंशन: addv + seqv।',
 		'example_05_03':		'एप्लिकेशन-विशिष्ट एक्सटेंशन: मैड + mmul + mxch।',
-		'example_05_02':		'एप्लिकेशन-विशिष्ट एक्सटेंशन: strlen_2 + Skipasciicode_2।',
 		'example_03_01':		'अस्थायी बिंदु अपवाद के साथ <b> शिक्षाप्रद </ b> उदाहरण।',
 		'example_03_02':		'<b> शिक्षाप्रद </ b> रुकावट के समर्थन के साथ उदाहरण: लाने के लिए, RETI, और .ktext / -kdata।',
 		'example_03_03':		'सिस्टम कॉल समर्थन के साथ <b> शिक्षाप्रद </ b> उदाहरण।',
@@ -71,6 +70,7 @@
 		'Intermediate':		'मध्यम',
 		'Laboratory':		'प्रयोगशाला',
 		'Operating Systems':		'ऑपरेटिंग सिस्टम',
+		'Extra':			'बोनस',
 		'Special':		'विशेष',
 
 	        "Load example":					"लोड उदाहरण",

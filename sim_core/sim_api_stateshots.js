@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -80,7 +80,7 @@
 
         // to prepare filter
 	var filter_ext = [] ;
-	var filter_base = filter.toUpperCase().split(/[,;:]+/).filter(v => v!='') ;
+	var filter_base = filter.toUpperCase().split(/[,;:]+/).filter((v) => v!='') ;
         for (var i=0; i<filter_base.length; i++)
         {
 	     elto = filter_base[i].split('-') ;

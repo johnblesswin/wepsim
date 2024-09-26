@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -21,36 +21,35 @@
 
     i18n.eltos.examples.kr = {
 
-             "addv + seqv.":						"addv + seqv.",
-             "Alloc.s":							"Alloc.s",
-             "Dummy instruction":					"Dummy instruction",
-             "Exception":						"Exception",
-             "Instructions":						"Instructions",
-             "Interruptions":						"Interruptions",
-             "Int. + syscall + except.":				"Int. + syscall + except.",
-             "I/O":							"I/O",
-             "Looping":							"Looping",
-             "madd, mmul, mxch":					"madd, mmul, mxch",
-             "Masks & shift":						"Masks & shift",
-             "Matrix":							"Matrix",
-             "Memory access":						"Memory access",
-             "SC 1, 4-5, 8, 11-12":					"SC 1, 4-5, 8, 11-12",
-             "strlen_2 + skipasciicode_2":				"strlen_2 + skipasciicode_2",
-             "Subrutine":						"Subrutine",
-             "syscall 1, 4-5, 8, 11-12":				"syscall 1, 4-5, 8, 11-12",
-             "System call":						"System call",
-             "Threads":							"Threads",
-             "Vector":							"Vector",
-	        "Compiler Explorer":				"Compiler Explorer",
+             "addv + seqv.":				"addv + seqv.",
+             "Alloc.s":					"Alloc.s",
+             "Dummy instruction":			"Dummy instruction",
+             "Exception":				"Exception",
+             "Instructions":				"Instructions",
+             "Interruptions":				"Interruptions",
+             "Int. + syscall + except.":		"Int. + syscall + except.",
+             "I/O":					"I/O",
+             "Looping":					"Looping",
+             "madd, mmul, mxch":			"madd, mmul, mxch",
+             "Masks & shift":				"Masks & shift",
+             "Matrix":					"Matrix",
+             "Memory access":				"Memory access",
+             "SC 1, 4-5, 8, 11-12":			"SC 1, 4-5, 8, 11-12",
+             "Subrutine":				"Subrutine",
+             "syscall 1, 4-5, 8, 11-12":		"syscall 1, 4-5, 8, 11-12",
+             "System call":				"System call",
+             "Threads":					"Threads",
+             "Vector":					"Vector",
+	     "Compiler Explorer":			"Compiler Explorer",
 
+	     "Instructive":		        	"<b>유익한</b>",
              "example_04_01":				"중단, 시스템 호출 및 예외가있는 고급 예제",
              "example_05_01":				"응용 프로그램 관련 확장 프로그램 : addv + seqv.",
              "example_05_03":				"응용 프로그램 관련 확장 프로그램 : madd + mmul + mxch.",
-             "example_05_02":				"응용 프로그램 관련 확장 프로그램 : strlen_2 + skipasciicode_2.",
              "example_03_01":				"부동 소수점 예외가있는 실용적인 예제",
              "example_03_02":				"인터럽트를 지원하는 지침적인 예 : fetch, RETI 및 .ktext/.kdata.",
              "example_03_03":				"시스템 호출을 지원하는 지침적인 예",
-	     "example_03_04":				"간단한 스택 규칙을 사용한 <b> 유익한 </ b> 예제.",
+	     "example_03_04":				"간단한 스택 규칙을 사용한 예제.",
 
              "example_04_04":				"malloc + free 예제",
              "example_04_02":				"정수 및 문자열 인쇄/읽기 용 syscall 예제",
@@ -67,13 +66,14 @@
              "example_01_03":				"가져 오기, 분기 및 기본 .text 세그먼트가있는 간단한 예제입니다.",
              "example_01_02":				"가져 오기, 메모리 액세스 및 기본. 텍스트 /. 데이터 세그먼트가있는 간단한 예제입니다.",
              "example_06_01":				"테스트 예.",
-	        "example_06_02":	                    	"간단한 컴파일러 탐색기 예제.",
+	     "example_06_02":	                    	"간단한 컴파일러 탐색기 예제.",
 
              "Advanced":				"많은",
              "Initial":					"머리 글자",
              "Intermediate":				"중급",
              "Laboratory":				"실험실",
              "Operating Systems":			"운영체제",
+	     "Extra":					"보너스",
              "Special":					"특별한",
 
 	     "Load example":			        "로드 예제",

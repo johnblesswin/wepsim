@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -79,7 +79,7 @@
 	    return ;
 	}
 
-        ga('send', 'event', 'help', 'help.tutorial', 'help.tutorial.name=' + tutorial_name + ',step=' + step);
+        simcore_ga('help', 'help.tutorial', 'help.tutorial.name=' + tutorial_name + ',step=' + step) ;
 
         // 3.- code_pre
         tutorial[step].code_pre();

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -151,7 +151,7 @@
         var o = 'CLK-'      + Math.trunc(get_value(simhw_sim_state('CLK')))      + '+' +
                 'DECO_INS-' + Math.trunc(get_value(simhw_sim_state('DECO_INS'))) + '+' +
                 'ACC_TIME-' + Math.trunc(get_value(simhw_sim_state('ACC_TIME'))) ;
-        ga('send', 'event', 'execution', 'execution.' + 'cpu', 'execution.' + 'cpu' + '.' + o) ;
+        simcore_ga('execution', 'execution.' + 'cpu', 'execution.' + 'cpu' + '.' + o) ;
 
 	return true ;
     }
@@ -203,6 +203,34 @@
 
     function wepsim_show_stopbyevent ( msg1, msg2 )
     {
+	var buttons = {} ;
+	    buttons.states = {
+	       label:     "<span data-langkey='States'>States</span>",
+	       className: 'btn btn-secondary col float-left shadow-none mr-auto',
+	       callback:  function() {
+	    		     wsweb_dlg_close(dlg_obj) ;
+			     wsweb_dialog_open('state') ;
+			     return true;
+		          }
+	    };
+	var ret = simcore_check_if_can_continue() ;
+	if (ret.ok)
+        {
+	    buttons.continue = {
+	       label:     "<span data-langkey='Continue'>Continue</span>",
+	       className: 'btn btn-secondary col float-left shadow-none mr-auto',
+	       callback:  function() {
+			     wsweb_dlg_close(dlg_obj) ;
+			     wsweb_execution_run();
+			     return true;
+		          }
+	    };
+        }
+	    buttons.close = {
+	       label:     "<span data-langkey='Close'>Close</span>",
+	       className: 'btn-primary col float-right shadow-none'
+	    };
+
 	var dlg_obj = {
 			id:      'current_state2',
 			title:   function() {
@@ -229,21 +257,7 @@
 					   '</div>' +
 					   '</div>' ;
                                  },
-			buttons: {
-					states: {
-					   label:     "<span data-langkey='States'>States</span>",
-					   className: 'btn btn-secondary col float-left shadow-none mr-auto',
-					   callback: function() {
-							wsweb_dlg_close(dlg_obj) ;
-							wsweb_dialog_open('state') ;
-							return true;
-						     },
-					},
-					close: {
-					   label:     "<span data-langkey='Close'>Close</span>",
-					   className: 'btn-primary col float-right shadow-none'
-					}
-				 },
+			buttons: buttons,
 			size:    '',
 			onshow:  function() {}
 		      } ;
@@ -253,8 +267,193 @@
 	return true ;
     }
 
+    function wepsim_memdashboard_notify_offcanvas ( ref_mdash, notif_origin, notifications, skip1st )
+    {
+        // find index 'k' of the first line for the notify...
+        let k = 0 ;
+        let lineuc = '' ;
+	while (k < notifications)
+        {
+            lineuc = ref_mdash.notify[k].toUpperCase() ;
+	    k++ ;
+
+            if (lineuc.includes("SKIP1ST")) {
+                break ;
+	    }
+	}
+	if (k >= notifications) {
+            k = 0 ;
+        }
+
+        // get title info
+        let title_info = '' ;
+        if (typeof ref_mdash.notify[k] != "undefined")
+	{
+            title_info = ref_mdash.notify[k] ;
+            if (true == skip1st) {
+                k++ ;
+            }
+	}
+
+        // title
+	var dialog_title = "Notify @ 0x" + parseInt(notif_origin).toString(16) + ":<br>" + title_info ;
+
+	// content
+        var dialog_msg = '<div style="max-height:80vh; width:inherit; overflow:auto; -webkit-overflow-scrolling:touch;">' ;
+        while (k < notifications)
+        {
+	     dialog_msg += ref_mdash.notify[k] + "\n" ;
+
+             if (ref_mdash.notify[k].includes("<html>") == false) {
+	         dialog_msg += "<br>" ;
+             }
+
+             k++ ;
+	}
+	dialog_msg += '</div>' ;
+
+	// footer
+	var dialog_footer = '<span class="row m-2">' +
+                            '<button class="btn btn-danger col me-2"' +
+			    '        onclick="wepsim_execute_stop();' +
+			    '                 wepsim_offcanvas_hide(\'offcvs3\');' +
+			    '                 return false;">' +
+			    '<span data-langkey="Stop">Stop</span></button>' +
+			    '<button class="btn btn-success col"' +
+			    '        onclick="wepsim_offcanvas_hide(\'offcvs3\');' +
+                            '                 setTimeout(wepsim_execute_chainplay,' +
+			    '                            get_cfg(\'DBG_delay\'),' +
+			    '                            wepsim_execute_stop);' +
+			    '                 return false;">' +
+			    '<span data-langkey="Continue">Continue</span></button>' +
+                            '</span>' ;
+
+	// show as offcanvas...
+	wepsim_offcanvas_set_content("offcvs3", dialog_title, false, dialog_msg, dialog_footer) ;
+	wepsim_offcanvas_show("offcvs3") ;
+
+	return false ;
+    }
+
+    function wepsim_memdashboard_notify_dialogbox ( ref_mdash, notif_origin, notifications, skip1st )
+    {
+        var k = 1 ;
+        if (skip1st) k++ ;
+
+        // title
+	var dialog_title = "Notify @ 0x" + parseInt(notif_origin).toString(16) + ": " + ref_mdash.notify[k] ;
+
+	// content
+	var dialog_msg = '<div style="max-height:70vh; width:inherit; overflow:auto; -webkit-overflow-scrolling:touch;">' ;
+	while (k<notifications) {
+	     dialog_msg += ref_mdash.notify[k] + "\n<br>" ;
+             k++;
+	}
+	dialog_msg += '</div>' ;
+
+	// show as dialogbox...
+	bootbox.confirm({
+		title:    dialog_title,
+		message:  dialog_msg,
+		buttons:  {
+			     cancel:  { label: 'Stop',     className: 'btn-danger  btn-sm' },
+			     confirm: { label: 'Continue', className: 'btn-primary btn-sm' }
+			  },
+		callback: function (result) {
+			     if (result) {
+				  setTimeout(wepsim_execute_chainplay,
+					     get_cfg('DBG_delay'),
+					     wepsim_execute_stop) ;
+                             }
+			     else wepsim_execute_stop() ;
+			  }
+	});
+
+	return false ;
+    }
+
+    function wepsim_check_getnotifyoptions ( firstline )
+    {
+        var ret = {
+	             showas:         'offcanvas',
+	             skip1stline:    false,
+	             scroll2current: false,
+	             skipme:         false,
+	             panel2view:     [],
+	             detail2view:    [],
+	             eltos2glow:     []
+                  } ;
+
+        var firstline_uppercase = firstline.toUpperCase() ;
+	if (firstline_uppercase.includes('SHOWAS:DIALOGBOX')) {
+	    ret.showas = 'dialogbox' ;
+        }
+
+	if (firstline_uppercase.includes('SKIP1ST:TRUE')) {
+	    ret.skip1stline = true ;
+        }
+
+	if (firstline_uppercase.includes('SCROLL2CURRENT:TRUE')) {
+	    ret.scroll2current = true ;
+        }
+
+	if (firstline_uppercase.includes('SKIPME:TRUE')) {
+	    ret.skipme = true ;
+        }
+
+        var eltos2glow = firstline.match(/glow:\S+/g) ;
+        if (eltos2glow != null) {
+            ret.eltos2glow = eltos2glow[0].split(':')[1].split(',') ;
+        }
+
+        var panel2view = firstline.match(/showpanel:\S+/g) ;
+        if (panel2view != null) {
+            ret.panel2view = panel2view[0].split(':')[1] ;
+        }
+
+        var detail2view = firstline.match(/showdetails:\S+/g) ;
+        if (detail2view != null) {
+            ret.detail2view = detail2view[0].split(':')[1] ;
+        }
+
+	return ret ;
+    }
+
+    function wepsim_check_donotifyoptions ( options )
+    {
+	// glowing elements...
+	for (var i=0; i<options.eltos2glow.length; i++) {
+	    simcore_record_glowing('#' + options.eltos2glow[i]) ;
+	}
+
+	// scroll into the current instruction...
+	if (options.scroll2current) {
+	    wsweb_change_show_asmdbg();
+	}
+
+	// setview
+	if (options.panel2view != '')
+	{
+	    if (options.panel2view === "microcode") {
+		wsweb_change_show_processor() ;
+	    }
+	    if (options.panel2view === "assembly") {
+		wsweb_change_show_asmdbg() ;
+	    }
+	}
+
+	// setview
+	if (options.detail2view != '') {
+	    wsweb_set_details(options.detail2view.toUpperCase()) ;
+	}
+
+	return false ;
+    }
+
     function wepsim_check_memdashboard ( ref_mdash, notif_origin )
     {
+	var ret = true ;
+
         if (typeof ref_mdash === "undefined") {
 	    return true ;
 	}
@@ -269,29 +468,22 @@
 	var notifications = ref_mdash.notify.length ;
 	if (notifications > 1)
            {
-		var dialog_title = "Notify @ 0x" + parseInt(notif_origin).toString(16) + ": " + ref_mdash.notify[1] ;
+                ret = get_cfg('DBG_skip_notifycolon') ;
+	        if (ret) {
+	            return true ;
+                }
 
-		var dialog_msg = '<div style="max-height:70vh; width:inherit; overflow:auto; -webkit-overflow-scrolling:touch;">' ;
-		for (var k=1; k<notifications; k++) {
-		     dialog_msg += ref_mdash.notify[k] + "\n<br>" ;
-		}
-                dialog_msg += '</div>' ;
+                ret = wepsim_check_getnotifyoptions(ref_mdash.notify[1]) ;
+	        if (ret.skipme) {
+	            return true ;
+                }
 
-		bootbox.confirm({
-			title:    dialog_title,
-			message:  dialog_msg,
-			buttons:  {
-				     cancel:  { label: 'Stop',     className: 'btn-danger  btn-sm' },
-				     confirm: { label: 'Continue', className: 'btn-primary btn-sm' }
-				  },
-			callback: function (result) {
-				     if (result)
-				          setTimeout(wepsim_execute_chainplay, get_cfg('DBG_delay'), wepsim_execute_stop) ;
-				     else wepsim_execute_stop() ;
-				  }
-		});
+	        // show content...
+	        if ('offcanvas' == ret.showas)
+	             wepsim_memdashboard_notify_offcanvas(ref_mdash, notif_origin, notifications, ret.skip1stline) ;
+	        else wepsim_memdashboard_notify_dialogbox(ref_mdash, notif_origin, notifications, ret.skip1stline) ;
 
-		return false ;
+                return wepsim_check_donotifyoptions(ret) ;
 	   }
 
         // return 'continue to next one'
@@ -315,18 +507,28 @@
 	var ret  = false ;
         var ret2 = {} ;
 
-	var curr_mp    = simhw_internalState('MP') ;
-        var curr_firm  = simhw_internalState('FIRMWARE') ;
-	var pc_name    = simhw_sim_ctrlStates_get().pc.state ;
-	var ref_pc     = simhw_sim_state(pc_name) ;
-	var reg_pc     = get_value(ref_pc) ;
-	var maddr_name = simhw_sim_ctrlStates_get().mpc.state ;
-	var ref_maddr  = simhw_sim_state(maddr_name) ;
-	var reg_maddr  = get_value(ref_maddr) ;
-        var ref_mdash  = null ;
+	var curr_mp     = simhw_internalState('MP') ;
+        var curr_firm   = simhw_internalState('FIRMWARE') ;
+	var pc_name     = simhw_sim_ctrlStates_get().pc.state ;
+	var ref_pc      = simhw_sim_state(pc_name) ;
+	var reg_pc      = get_value(ref_pc) ;
+	var maddr_name  = simhw_sim_ctrlStates_get().mpc.state ;
+	var ref_maddr   = simhw_sim_state(maddr_name) ;
+	var reg_maddr   = get_value(ref_maddr) ;
+        var ref_mdash   = null ;
+        var fetch_maddr = 0 ;
 
         var i_clks = 0 ;
 	var i = 0 ;
+
+        // try to find fetch address, that is zero by default...
+        fetch_maddr = 0 ;
+        for (var k in curr_firm.labels_firm) {
+             if ("fetch" == curr_firm.labels_firm[k])
+                  fetch_maddr = k ;
+        }
+
+        // execute chunk...
         while (i < chunk)
         {
             // one clock cycle...
@@ -354,8 +556,8 @@
                 return pack_ret2(false, "Breakpoint", 'INFO: Microinstruction is going to be issue.') ;
 	    }
 
-	    if ( ((0 == reg_maddr) && (false == ref_mdash.is_native)) ||
-	         ((0 != reg_maddr) && (true  == ref_mdash.is_native)) )
+	    if ( ((fetch_maddr == reg_maddr) && (false == ref_mdash.is_native)) ||
+	         ((fetch_maddr != reg_maddr) && (true  == ref_mdash.is_native)) )
 	    {
                 ref_mdash = simhw_internalState_get('MP', reg_pc) ;
 	        ret = wepsim_check_memdashboard(ref_mdash, reg_pc) ;
@@ -483,7 +685,8 @@
         }
 
 	DBG_limit_instruction += turbo ;
-        if (DBG_limit_instruction > get_cfg('DBG_limitins'))
+        var dbg_limit_ins = get_cfg('DBG_limitins') ;
+        if ( (DBG_limit_instruction > dbg_limit_ins) && (dbg_limit_ins > 0) )
 	{
             wepsim_show_stopbyevent("Limit",
                                     "Number of executed instructions limit reached.<br>" +

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -34,15 +34,36 @@
 	      }
 
               // render
-	      render ( )
-	      {
+              render ( event_name )
+              {
                     // initialize render elements...
-	            super.render() ;
+                    super.render() ;
 
                     // render current element
-		    this.innerHTML = table_config_html(ws_info.config_ui) ;
+                    this.render_skel() ;
+                    this.render_populate() ;
+              }
 
-		    // ui elements
+              render_skel ( )
+              {
+                    var cfgdiv_id = 'config2-scroller' ; // -> this.name_str + '-scroller' ;
+
+                    // default content
+                    this.innerHTML = "<div class='ui-body-d ui-content p-0' id='" + cfgdiv_id + "' " +
+                                     "     style='min-height:50vh; max-height:70vh; " +
+                                     "            overflow-y:auto; overflow-x:auto; -webkit-overflow-scrolling:touch;'>" +
+                                     "</div>" ;
+              }
+
+              render_populate ( )
+              {
+                    var cfgdiv_id = 'config2-scroller' ; // -> this.name_str + '-scroller' ;
+
+                    // render HTML elements
+                    var o1 = table_config_html(ws_info.config_ui) ;
+                    $('#' + cfgdiv_id).html(o1) ;
+
+		    // initialize UI elements
                     var m=0 ;
 		    try
 		    {
@@ -57,16 +78,17 @@
 		        }
 		    }
 
-		    $('a[data-toggle="popover1"]').popover({
-		   	     placement:  'bottom',
-			     trigger:    'focus, hover',
-			     animation:  false,
-			     delay:      { "show": 500, "hide": 100 },
-			     sanitizeFn: function (content) {
+		    var popover_cfg = {
+		   	    placement:  'bottom',
+			    trigger:    'focus, hover',
+			    animation:  false,
+			    delay:      { "show": 500, "hide": 100 },
+			    sanitizeFn: function (content) {
 					     return content ; // DOMPurify.sanitize(content) ;
-				         }
-		    }) ;
-	      }
+				        }
+		        } ;
+                    wepsim_popovers_init('a[data-bs-toggle="popover1"]', popover_cfg, null) ;
+              }
         }
 
         register_uielto('ws-config', ws_config) ;
@@ -80,13 +102,13 @@
         {
      	     var e_type        = "" ;
      	     var e_u_class     = "" ;
+     	     var e_class_1     = "" ;
+     	     var e_class_2     = "" ;
      	     var e_code_cfg    = "" ;
      	     var e_description = "" ;
      	     var e_id          = "" ;
-     
-             var fmt_toggle    = "" ;
-             var fmt_header    = "" ;
-     
+
+
              // first pass: build data
              var row = "" ;
              var config_groupby_type = {} ;
@@ -97,31 +119,34 @@
      		e_code_cfg    = config[n].code_cfg ;
      		e_description = config[n].description ;
      		e_id          = config[n].id ;
-     
+
      		// related row
-     	        if (fmt_toggle === "")
-     	            fmt_toggle = "bg-light" ;
-     	       else fmt_toggle = "" ;
-     
-     		row = '<div class="row py-1 ' + fmt_toggle + ' ' + e_u_class + '" id="' + e_type + '">' +
-     		      '<div class="col-md-auto">' +
-     		      '    <span class="badge badge-pill badge-light">' + (n+1) + '</span>' +
+     	        e_class_1 = "                " + e_u_class + " " ;
+     	        e_class_2 = " collapse7 show " + e_u_class + " " ;
+
+     		row = '<div class="w-100 p-0 m-0 border-top border-2 '   + e_class_2 + '">' +
+                      '</div>' +
+                      '<div class="col-md-auto py-2 ' + e_class_1 + '">' +
+     		      '    <span class="badge rounded-pill text-secondary">' + (n+1) + '</span>' +
      		      '</div>' +
-     		      '<div class="col-md-4">'  + e_code_cfg   + '</div>' +
-     		      '<div class="col-md collapse7 show align-items-center"><c>' + e_description + '</c></div>' +
-     		      '</div>' ;
-     
+     		      '<div class="col-md-4    py-2 ' + e_class_1 + '">' +
+                           e_code_cfg  +
+                      '</div>' +
+     		      '<div class="col-md      py-2 align-items-center ' + e_class_2 + '">' +
+                           '<c>' + e_description + '</c>' +
+                      '</div>' ;
+
      		// indexing row
      		if (typeof config_groupby_type[e_type] === "undefined") {
      		    config_groupby_type[e_type] = [] ;
      		}
-     
+
      		config_groupby_type[e_type].push({'row':     row,
      			                          'u_class': e_u_class}) ;
             }
-     
+
             // second pass: build html
-            var o  = '<div class="container grid-striped border border-light">' ;
+            var o  = '<div class="container grid-striped border border-tertiary"><div class="row">' ;
             var u  = '' ;
             var l  = '' ;
             var l1 = [] ;
@@ -130,10 +155,10 @@
             {
      	        u  = '' ;
      	        l2 = {} ;
-                     for (n=0; n<config_groupby_type[m].length; n++)
-                     {
+                for (n=0; n<config_groupby_type[m].length; n++)
+                {
      		     u = u + config_groupby_type[m][n].row ;
-     
+
      	             l1 = config_groupby_type[m][n].u_class.split(' ') ;
      		     for (var li=0; li<l1.length; li++)
      	             {
@@ -142,8 +167,12 @@
      			  }
      			  l2[l1[li]]++ ;
      		     }
+
+                     if (n%2 == 0) {
+                         u = u + '<div class="w-100 p-0 m-0"></div>' ;
                      }
-     
+                }
+
      	        l = '' ;
      	        for (var lj in l2)
      	        {
@@ -151,13 +180,13 @@
      			 l += lj + ' ' ;
      		     }
      		}
-     
-     		o = o + "<div class='float-none text-right text-capitalize font-weight-bold col-12 border-bottom border-secondary bg-white sticky-top " + l + "'>" +
+
+     		o = o + "<div class='float-none text-end text-capitalize fw-bold col-12 border-bottom border-secondary bg-body sticky-top " + l + "'>" +
      			"<span data-langkey='" + m + "'>" + m + "</span>" +
      			"</div>" + u ;
             }
-            o = o + '</div>' ;
-     
+            o = o + '</div></div>' ;
+
             return o ;
          }
 

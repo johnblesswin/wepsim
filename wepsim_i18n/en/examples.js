@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of WepSIM.
  *
@@ -35,22 +35,20 @@
              "Matrix":							"Matrix",
              "Memory access":						"Memory access",
              "SC 1, 4-5, 8, 11-12":					"SC 1, 4-5, 8, 11-12",
-             "strlen_2 + skipasciicode_2":				"strlen_2 + skipasciicode_2",
              "Subrutine":						"Subrutine",
              "syscall 1, 4-5, 8, 11-12":				"syscall 1, 4-5, 8, 11-12",
              "System call":						"System call",
              "Threads":							"Threads",
              "Vector":							"Vector",
 	     "Compiler Explorer":					"Compiler Explorer",
-
+	     "Instructive":		        	"<b>Instructive</b>",
              "example_04_01":				"Advanced example with interruption, system call, and exception.",
              "example_05_01":				"Application-specific extension: addv + seqv.",
              "example_05_03":				"Application-specific extension: madd + mmul + mxch.",
-             "example_05_02":				"Application-specific extension: strlen_2 + skipasciicode_2.",
-             "example_03_01":				"<b>Instructive</b> example with floating point exception.",
-             "example_03_02":				"<b>Instructive</b> example with interruptions support: fetch, RETI, and .ktext/.kdata.",
-             "example_03_03":				"<b>Instructive</b> example with system call support.",
-	     "example_03_04":				"<b>Instructive</b> example with simple stack convention.",
+             "example_03_01":				"Example with floating point exception.",
+             "example_03_02":				"Example with interruptions support: fetch, RETI, and .ktext/.kdata.",
+             "example_03_03":				"Example with system call support.",
+	     "example_03_04":				"Example with simple stack convention.",
              "example_04_04":				"Example of malloc + free.",
              "example_04_02":				"Example of syscall for printing/reading integer and string.",
              "example_04_03":				"Example of threads.",
@@ -73,6 +71,7 @@
              "Intermediate":				"Intermediate",
              "Laboratory":				"Laboratory",
              "Operating Systems":			"Operating Systems",
+	     "Extra":					"Bonus",
              "Special":					"Special",
 
 	     "Load example":				"Load example",
